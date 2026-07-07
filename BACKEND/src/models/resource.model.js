@@ -1,0 +1,63 @@
+import mongoose from 'mongoose';
+
+const resourceSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    department: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    semester: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 8
+    },
+    resourceType: {
+      type: String,
+      enum: ['Exam Paper', 'Textbook', 'Class Notes'],
+      required: true
+    },
+    subjectCode: {
+      type: String,
+      required: true,
+      trim: true,
+      uppercase: true,
+      index: true
+    },
+    year: {
+      type: Number,
+      required: true
+    },
+    examType: {
+      type: String,
+      enum: ['Midterm', 'Final', 'Quiz', 'Assignment', 'Other'],
+      default: 'Other'
+    },
+    fileUrl: {
+      type: String,
+      required: true
+    },
+    tags: {
+      type: [String],
+      default: []
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    }
+  },
+  { timestamps: true }
+);
+
+resourceSchema.index(
+  { subjectCode: 'text', title: 'text', tags: 'text' },
+  { weights: { subjectCode: 10, title: 5, tags: 1 } }
+);
+
+export default mongoose.model('Resource', resourceSchema);
