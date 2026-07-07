@@ -30,8 +30,29 @@ const uploadResource = asyncHandler(async (req, res) => {
   if (requiredFields.some((field) => field === undefined || field === null || field === '')) {
     throw new ApiError(400, 'All required metadata fields must be provided');
   }
+  // Debug: log incoming file presence and auth header for troubleshooting
+  try {
+    console.debug('Admin upload headers:', {
+      hasAdminToken: !!(req.headers['x-admin-token'] || req.headers.authorization),
+      contentType: req.headers['content-type']
+    });
+    console.debug('Uploaded file info:', {
+      path: req.file?.path,
+      originalname: req.file?.originalname,
+      mimetype: req.file?.mimetype,
+      size: req.file?.size
+    });
+  } catch (dE) {
+    console.warn('Failed to log upload debug info', dE);
+  }
 
-  const uploadedFile = await uploadOnCloudinary(req.file.path);
+  let uploadedFile;
+  try {
+    uploadedFile = await uploadOnCloudinary(req.file.path);
+  } catch (err) {
+    const status = err?.http_code || 502;
+    throw new ApiError(status, `Failed to upload file to cloud storage: ${err?.message || 'unknown error'}`);
+  }
 
   if (!uploadedFile?.secure_url) {
     throw new ApiError(500, 'Failed to upload file to cloud storage');

@@ -1,0 +1,46 @@
+$kind: http-request
+name: resources
+url: "{{baseURL}}/admin/upload"
+method: POST
+headers:
+  Authorization: super-secret-admin-token
+body:
+  type: formdata
+  content:
+    - type: file
+      key: resourceFile
+      src:
+        - /Users/priyaranjan/Downloads/Confirmation-fight.pdf
+      description: ""
+      disabled: false
+    - type: text
+      key: title
+      value: Data Structures End-Sem 2025
+      description: ""
+      disabled: false
+    - type: text
+      key: department
+      value: Computer Science
+      description: ""
+      disabled: false
+    - type: text
+      key: semester
+      value: "3"
+      description: ""
+      disabled: false
+    - type: text
+      key: resourceType
+      value: Exam Paper
+      description: ""
+      disabled: false
+    - type: text
+      key: subjectCode
+      value: CS201
+      description: ""
+      disabled: false
+    - type: text
+      key: year
+      value: "2025"
+      description: ""
+      disabled: false
+order: 1000

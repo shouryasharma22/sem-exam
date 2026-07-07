@@ -1,0 +1,4 @@
+name: sem-exam
+values:
+  - key: adminToken
+    value: super-secret-admin-token
