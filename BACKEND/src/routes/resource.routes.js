@@ -6,7 +6,7 @@ import upload from '../middlewares/multer.middleware.js';
 const router = express.Router();
 
 router.get('/', getResources);
-router.post('/', upload.single('resourceFile'), uploadResource);
+// router.post('/', upload.single('resourceFile'), uploadResource);
 router.get('/:id', getResourceById);
 
 export default router;
