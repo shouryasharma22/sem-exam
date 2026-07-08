@@ -31,9 +31,9 @@ function Sidebar() {
           <button
             type="button"
             onClick={clearFilters}
-            className="rounded-full bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-xs font-semibold text-blue-600 transition hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
           >
-            Clear Filters
+            Reset Filters
           </button>
         )}
       </div>
@@ -55,13 +55,13 @@ function Sidebar() {
                   onClick={() => setSelectedDepartment(isActive ? '' : department)}
                   className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
                     isActive
-                      ? 'border-blue-100 bg-blue-50 text-blue-600'
+                      ? 'border-blue-600 bg-blue-600 text-white shadow-sm'
                       : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
                   }`}
                 >
                   <span>{department}</span>
                   {isActive && (
-                    <span className="rounded-full bg-blue-100 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-blue-700">
+                    <span className="rounded-full bg-blue-500 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
                       Active
                     </span>
                   )}

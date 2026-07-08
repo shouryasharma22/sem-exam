@@ -1,81 +1,27 @@
-import { useMemo } from 'react';
-import { useResource } from '../../context/ResourceContext';
+import { Link } from 'react-router-dom';
 
-function Navbar({ activeTab, onChangeTab }) {
-  const { searchQuery, setSearchQuery, clearFilters } = useResource();
-
-  const showClear = Boolean(searchQuery?.trim());
-
-  const badgeClass =
-    'inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-lg';
-
-  const navButtonClass = (selected) =>
-    `rounded-full px-4 py-2 text-sm font-semibold transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-      selected
-        ? 'bg-slate-100/10 text-white shadow-sm'
-        : 'bg-white/10 text-slate-200 hover:bg-white/15'
-    }`;
-
+export default function Navbar() {
   return (
-    <header className="sticky top-0 z-20 border-b border-white/10 bg-slate-900/95 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div className="flex items-center gap-4">
-          <div className={badgeClass}>
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-            <span>NITK SemExam Hub</span>
-          </div>
-          <div className="hidden text-sm text-slate-300 sm:block">
-            A centralized student resource library for notes, exams, and uploads.
-          </div>
-        </div>
-
-        <div className="relative flex-1 min-w-0">
-          <label className="sr-only" htmlFor="global-search">
-            Search resources
-          </label>
-          <div className="relative">
-            <input
-              id="global-search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search by title or subject code"
-              className="w-full rounded-3xl border border-white/15 bg-slate-800/90 px-4 py-3 pr-12 text-sm text-white outline-none ring-1 ring-transparent transition focus:border-blue-400 focus:ring-blue-500"
-            />
-            {showClear && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  clearFilters();
-                }}
-                aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-slate-700/80 px-2 py-1 text-sm text-slate-200 transition hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        </div>
-
-        <nav className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onChangeTab('browse')}
-            className={navButtonClass(activeTab === 'browse')}
-          >
-            Browse
-          </button>
-          <button
-            type="button"
-            onClick={() => onChangeTab('admin')}
-            className={navButtonClass(activeTab === 'admin')}
-          >
-            Admin Panel
-          </button>
+    <header className="sticky top-0 w-full border-b border-[#434655] bg-[#0c1324]/80 backdrop-blur-md z-50">
+      <div className="flex justify-between items-center px-6 py-6 max-w-7xl mx-auto">
+        
+        {/* Left Side Branding */}
+        <Link to="/" className="flex items-center text-2xl tracking-tight cursor-pointer select-none">
+          <span className="font-bold text-[#b4c5ff]">Sem</span>
+          <span className="font-light text-[#dce1fb]">Exam</span>
+        </Link>
+        
+        {/* Right Side Passive Content Routers */}
+        <nav className="flex items-center gap-12">
+          <Link to="/" className="text-base text-[#c3c6d7] hover:text-[#b4c5ff] transition-colors font-medium">
+            PYQS
+          </Link>
+          <a href="#notes" className="text-base text-[#c3c6d7] hover:text-[#b4c5ff] transition-colors font-medium">
+            Notes
+          </a>
         </nav>
+
       </div>
     </header>
   );
 }
-
-export default Navbar;

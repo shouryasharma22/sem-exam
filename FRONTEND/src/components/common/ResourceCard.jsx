@@ -17,71 +17,91 @@ function ResourceCard({ resource }) {
     ? `${examType || 'Exam'} ${year ? String(year) : ''}`.trim()
     : resourceType;
 
+  // 🎨 Dark mode custom badges matching the theme palette
   const typeBadgeClass = isExamPaper
-    ? 'bg-amber-100 text-amber-700'
-    : 'bg-slate-100 text-slate-700';
+    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
+    : 'bg-blue-500/10 border border-blue-500/20 text-blue-400';
 
+  const getViewablePdfUrl = (originalUrl) => {
+  if (!originalUrl) return '#';
+  if (!originalUrl.includes('cloudinary.com')) return originalUrl;
+
+  // 1. Strip out any forced download flags
+  let cleanUrl = originalUrl.replace('/upload/fl_attachment/', '/upload/');
+  
+  // 2. Add the clean inline rendering instructions for your new /image/upload files
+  if (cleanUrl.includes('/upload/') && !cleanUrl.includes('fl_inline')) {
+    cleanUrl = cleanUrl.replace('/upload/', '/upload/fl_inline,f_auto/');
+  }
+
+  return cleanUrl;
+};
+  
   return (
-    <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-slate-500">{resourceType}</p>
-          <h2 className="mt-2 text-xl font-semibold text-slate-900">{title}</h2>
+    <article className="group overflow-hidden rounded-2xl border border-[#434655]/40 bg-[#0F1422] p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#b4c5ff]/40 hover:shadow-2xl flex flex-col justify-between">
+      <div>
+        {/* Card Header Track */}
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-[#8d90a0]">{resourceType}</p>
+            <h2 className="mt-2 text-xl font-bold text-white tracking-tight leading-snug group-hover:text-[#b4c5ff] transition-colors">{title}</h2>
+          </div>
+          <span className="shrink-0 rounded bg-[#151b2d] border border-[#434655] px-2.5 py-1 mountaineer-badge text-xs font-mono uppercase tracking-widest text-[#c3c6d7]">
+            {normalizedSubject}
+          </span>
         </div>
-        <span className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono uppercase tracking-[0.2em] text-slate-600">
-          {normalizedSubject}
-        </span>
-      </div>
 
-      <div className="mb-5 flex flex-wrap items-center gap-3">
-        <span className={`rounded-full px-3 py-1 text-sm font-semibold ${typeBadgeClass}`}>
-          {typeLabel}
-        </span>
-        {semester && (
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">
-            Sem {semester}
+        {/* Descriptor Tags Meta Grid */}
+        <div className="mb-5 flex flex-wrap items-center gap-2">
+          <span className={`rounded px-2.5 py-0.5 text-xs font-mono uppercase tracking-wider ${typeBadgeClass}`}>
+            {typeLabel}
           </span>
-        )}
-        {year && !isExamPaper && (
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">
-            {year}
-          </span>
-        )}
-      </div>
-
-      <p className="mb-5 text-sm leading-6 text-slate-600">
-        A polished resource card built for fast student browsing and secure downloads.
-      </p>
-
-      <div className="mb-6 flex flex-wrap gap-2">
-        {Array.isArray(tags) && tags.length > 0 ? (
-          tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
-            >
-              #{String(tag).trim()}
+          {semester && (
+            <span className="rounded bg-[#151b2d] border border-[#434655]/60 px-2.5 py-0.5 text-xs font-mono text-[#c3c6d7]">
+              SEM {semester}
             </span>
-          ))
-        ) : (
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
-            No tags available
-          </span>
-        )}
+          )}
+          {year && !isExamPaper && (
+            <span className="rounded bg-[#151b2d] border border-[#434655]/60 px-2.5 py-0.5 text-xs font-mono text-[#c3c6d7]">
+              {year}
+            </span>
+          )}
+        </div>
+
+        {/* Filter Keyword Tag Collections */}
+        <div className="mb-6 flex flex-wrap gap-1.5">
+          {Array.isArray(tags) && tags.length > 0 ? (
+            tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[11px] font-mono text-[#8d90a0] hover:text-[#b4c5ff] transition-colors"
+              >
+                #{String(tag).trim()}
+              </span>
+            ))
+          ) : (
+            <span className="text-[11px] font-mono text-slate-600 italic">
+              #no_tags
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3">
+      {/* Footer Interface Component Anchor Links */}
+      <div className="mt-4 pt-4 border-t border-[#434655]/30 flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Resource link</p>
-          <p className="text-sm text-slate-500">Secure Cloudinary PDF</p>
+          <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#8d90a0]">Payload Source</p>
+          <p className="text-xs text-[#c3c6d7] font-mono">Secure CDN Node</p>
         </div>
+        
+        {/* 🌟 FIXED: Passing fileUrl directly through the filter handler stream */}
         <a
-          href={fileUrl}
+          href={getViewablePdfUrl(fileUrl)}
           target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          rel="noopener noreferrer"
+          className="inline-flex items-center rounded-xl bg-[#151b2d] border border-[#434655] px-4 py-2.5 text-xs font-mono text-slate-300 transition-all duration-200 hover:border-[#b4c5ff] hover:text-[#b4c5ff] focus:outline-none focus:ring-1 focus:ring-[#b4c5ff]"
         >
-          Open file
+          View
         </a>
       </div>
     </article>
