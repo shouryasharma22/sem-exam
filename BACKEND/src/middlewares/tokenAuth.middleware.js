@@ -1,13 +1,37 @@
 import { ApiError } from '../utils/ApiError.js';
 
-const tokenAuth = (req, res, next) => {
-  const providedToken = req.headers['x-admin-token'] || req.headers.authorization?.replace('Bearer ', '');
+/**
+ * Middleware to intercept requests and enforce admin token validation checkpoints.
+ */
+export const verifyAdminToken = (req, res, next) => {
+  try {
+    // Extracts the custom token header sent from the frontend input field
+    const adminToken = req.headers['x-admin-token'];
 
-  if (!providedToken || providedToken !== process.env.ADMIN_TOKEN) {
-    return next(new ApiError(401, 'Unauthorized access'));
+    if (!adminToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Access denied. Missing administrative validation node token.'
+      });
+    }
+
+    // Security check against your hidden server environment token parameter
+    if (adminToken !== process.env.ADMIN_TOKEN) {
+      return res.status(403).json({
+        success: false,
+        message: 'Authentication failed. Invalid admin protection sequence token.'
+      });
+    }
+
+    // Handshake successful—proceed to the next route controller (e.g., your upload pipe)
+    next();
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server token verification exception fault.'
+    });
   }
-
-  next();
 };
 
-export default tokenAuth;
+
+export {verifyAdminToken as default};

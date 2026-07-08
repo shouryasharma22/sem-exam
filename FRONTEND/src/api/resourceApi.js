@@ -81,7 +81,7 @@ export async function uploadResource(formData, adminToken) {
     });
 
     const wrapper = await parseResponse(response);
-    return wrapper.data;
+    return wrapper.data?wrapper.data : wrapper; // Return the data object if present, otherwise return the whole wrapper
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Resource upload failed: ${error.message}`);

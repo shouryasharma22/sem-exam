@@ -36,7 +36,7 @@ const resourceSchema = new mongoose.Schema(
     },
     examType: {
       type: String,
-      enum: ['Midterm', 'Final', 'Quiz', 'Assignment', 'Other'],
+      enum: ['Mid-Sem', 'Final', 'Quiz', 'Assignment', 'Other'],
       default: 'Other'
     },
     fileUrl: {
