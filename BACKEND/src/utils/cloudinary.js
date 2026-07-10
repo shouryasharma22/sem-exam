@@ -1,37 +1,60 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
-import 'dotenv/config';
+import path from 'path';
 
-// Initialize with your cloud name
+const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
+
+if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
+  throw new Error(
+    'Cloudinary configuration failure: Missing core environment credential variables.'
+  );
+}
+
+// 🟩 FIXED: We stripped out cloudinary_url completely to avoid key overriding!
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME // 'dmquu5ob1'
+  cloud_name: CLOUDINARY_CLOUD_NAME,
+  api_key: CLOUDINARY_API_KEY,
+  api_secret: CLOUDINARY_API_SECRET,
+  secure: true
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (localFilePath, publicId) => {
+  if (!localFilePath) return null;
+
   try {
-    if (!localFilePath) return null;
-
-    // 🌟 THE BULLETPROOF DESIGN: Hardcoded to force an Unsigned asset channel
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: 'auto',
-      upload_preset: 'sem_exam_preset', // Ensure this matches your Cloudinary preset exactly!
-      unsigned: true                    // 👈 Forces Cloudinary to ignore missing/invalid signatures
+      folder: "semexam_resources",
+      resource_type: "auto",
+      public_id: publicId
     });
-
-    try {
-      fs.unlinkSync(localFilePath);
-    } catch (e) {
-      console.warn('Local file cleanup skipped:', e.message);
-    }
 
     return response;
   } catch (error) {
-    if (localFilePath) {
-      try { fs.unlinkSync(localFilePath); } catch (e) {}
+    console.error('Cloudinary SDK Integration Exception:', JSON.stringify(error, null, 2));
+    throw error;
+  } finally {
+    if (fs.existsSync(localFilePath)) {
+      try {
+        fs.unlinkSync(localFilePath);
+      } catch (cleanupError) {
+        console.warn('Local asset clean up skipped:', cleanupError.message);
+      }
     }
-    console.error('Cloudinary Core Error:', error.message || error);
+  }
+};
+
+const deleteFromCloudinary = async (publicId, resourceType = 'image') => {
+  if (!publicId) return null;
+
+  try {
+    const response = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType
+    });
+    return response;
+  } catch (error) {
+    console.error('Cloudinary delete exception:', JSON.stringify(error, null, 2));
     throw error;
   }
 };
 
-export { uploadOnCloudinary };
+export { uploadOnCloudinary, deleteFromCloudinary };
