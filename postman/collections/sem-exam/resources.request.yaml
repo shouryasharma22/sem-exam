@@ -3,7 +3,7 @@ name: resources
 url: "{{baseURL}}/admin/upload"
 method: POST
 headers:
-  Authorization: super-secret-admin-token
+  Authorization: "{{adminToken}}"
 body:
   type: formdata
   content:

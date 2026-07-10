@@ -2,3 +2,4 @@ $kind: collection
 name: sem-exam
 variables:
   baseURL: ""
+  adminToken: ""
