@@ -14,7 +14,6 @@ const resourceSchema = new mongoose.Schema(
     },
     semester: {
       type: Number,
-      required: true,
       min: 1,
       max: 8
     },
@@ -31,8 +30,7 @@ const resourceSchema = new mongoose.Schema(
       index: true
     },
     year: {
-      type: Number,
-      required: true
+      type: Number
     },
     examType: {
       type: String,

@@ -26,12 +26,22 @@ const uploadResource = asyncHandler(async (req, res) => {
     tags
   } = req.body;
 
-  const requiredFields = [title, department, semester, resourceType, subjectCode, year];
+  const rt = resourceType ? String(resourceType).trim() : '';
+  // Accept only 'Textbook' values from clients (case-insensitive)
+  const isTextbook = ['textbook'].includes(rt.toLowerCase());
+
+  // Base required metadata for all resource types
+  const requiredFields = [title, department, resourceType, subjectCode];
+  // For non-textbook resources, semester and year remain required
+  if (!isTextbook) {
+    requiredFields.push(semester, year);
+  }
+
   if (requiredFields.some((field) => field === undefined || field === null || String(field).trim() === '')) {
     throw new ApiError(400, 'All required metadata fields must be provided');
   }
 
-  const publicId = `${subjectCode}_${examType || 'Other'}_${year}_${Date.now()}`
+  const publicId = `${subjectCode}_${(examType || 'Other')}_${(year || 'NA')}_${Date.now()}`
     .replace(/\s+/g, '_')
     .toUpperCase();
 
@@ -58,10 +68,10 @@ const uploadResource = asyncHandler(async (req, res) => {
   const resource = new Resource({
     title: title.trim(),
     department: department.trim(),
-    semester: Number(semester),
+    semester: semester !== undefined && semester !== null && String(semester).trim() !== '' ? Number(semester) : undefined,
     resourceType: resourceType.trim(),
     subjectCode: subjectCode.toString().trim().toUpperCase(),
-    year: Number(year),
+    year: year !== undefined && year !== null && String(year).trim() !== '' ? Number(year) : undefined,
     examType: examType || 'Other',
     publicId: uploadedFile.public_id,
     fileUrl: uploadedFile.secure_url,
