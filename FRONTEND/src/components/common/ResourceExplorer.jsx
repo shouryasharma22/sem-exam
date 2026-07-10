@@ -5,7 +5,7 @@ import ResourceCard from './ResourceCard';
 import useDebounce from '../../hooks/useDebounce';
 import { departments, examTypes, getRecentYears } from '../../constants/academic';
 
-const years = getRecentYears(8);
+const years = getRecentYears(12);
 
 function ResourceExplorer({ resourceType, pageTitle, pageDescription }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,6 +102,7 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription }) {
               placeholder="e.g. CS201"
               className="mt-2 w-full rounded-xl border border-[#434655] bg-[#151b2d] px-3 py-2.5 text-sm text-slate-200 outline-none focus:border-[#b4c5ff]/50"
             />
+            
           </label>
 
           <label className="block">
