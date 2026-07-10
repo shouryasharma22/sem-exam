@@ -1,25 +1,20 @@
-import { Link } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
-
+import { Link, NavLink } from 'react-router-dom';
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 w-full border-b border-[#434655] bg-[#0c1324]/80 backdrop-blur-md z-50">
-      <div className="flex justify-between items-center px-6 py-6 max-w-7xl mx-auto">
-
-        {/* Left Side Branding */}
+    <header className="sticky top-0 w-full bg-black z-50">
+      <div className="flex justify-between items-center px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
         <Link to="/" className="flex items-center text-2xl tracking-tight cursor-pointer select-none">
-          <span className="font-bold text-[#b4c5ff]">Sem</span>
-          <span className="font-light text-[#dce1fb]">Exam</span>
+          <span className="font-bold text-[#ff571a]">Sem</span>
+          <span className="font-light text-white">Exam</span>
         </Link>
 
-        {/* Right Side Passive Content Routers */}
-
-        <nav className="flex items-center gap-12">
+        <nav className="flex items-center gap-8 sm:gap-12">
           <NavLink
             to="/pyqs"
             className={({ isActive }) =>
-              `text-base font-medium transition-colors ${isActive ? 'text-[#b4c5ff]' : 'text-[#c3c6d7] hover:text-[#b4c5ff]'
+              `text-base font-medium transition-colors ${
+                isActive ? 'text-[#ff571a]' : 'text-white hover:text-[#ff571a]'
               }`
             }
           >
@@ -28,14 +23,24 @@ export default function Navbar() {
           <NavLink
             to="/notes"
             className={({ isActive }) =>
-              `text-base font-medium transition-colors ${isActive ? 'text-[#b4c5ff]' : 'text-[#c3c6d7] hover:text-[#b4c5ff]'
+              `text-base font-medium transition-colors ${
+                isActive ? 'text-[#ff571a]' : 'text-white hover:text-[#ff571a]'
               }`
             }
           >
             Notes
           </NavLink>
+          <NavLink
+            to="/books"
+            className={({ isActive }) =>
+              `text-base font-medium transition-colors ${
+                isActive ? 'text-[#ff571a]' : 'text-white hover:text-[#ff571a]'
+              }`
+            }
+          >
+            Books
+          </NavLink>
         </nav>
-
       </div>
     </header>
   );

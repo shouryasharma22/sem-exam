@@ -1,4 +1,4 @@
-import ResourceExplorer from '../components/common/ResourceExplorer';
+import ResourceExplorer from '../components/common/ResourcesExplorer';
 
 function NotesPage() {
   return (

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { uploadResource } from '../api/resourceApi';
-import { departments, examTypes } from '../constants/academic'
+import { departmentsList, examTypes } from '../constants/academic'
 
 const initialFormState = {
   title: '',
@@ -79,11 +79,10 @@ function AdminPortal() {
 
       {status && (
         <div
-          className={`rounded-3xl border p-5 text-sm ${
-            status.type === 'success'
+          className={`rounded-3xl border p-5 text-sm ${status.type === 'success'
               ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
               : 'border-rose-200 bg-rose-50 text-rose-700'
-          }`}
+            }`}
         >
           {status.message}
         </div>
@@ -121,10 +120,10 @@ function AdminPortal() {
               required
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
-              <option value="">Select department</option>
-              {departments.map((department) => (
-                <option key={department} value={department}>
-                  {department}
+              {/* 🟩 FIXED CORRECT WAY */}
+              {departmentsList.map((dept) => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.name}
                 </option>
               ))}
             </select>
@@ -135,7 +134,7 @@ function AdminPortal() {
             <select
               value={formState.semester}
               onChange={(event) => updateField('semester', event.target.value)}
-              required
+              required={formState.resourceType !== 'Textbook'}
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
               <option value="">Select semester</option>
@@ -168,7 +167,7 @@ function AdminPortal() {
             <select
               value={formState.examType}
               onChange={(event) => updateField('examType', event.target.value)}
-              required
+              required={formState.resourceType !== 'Textbook'}
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
               {examTypes.map((examType) => (
@@ -187,7 +186,7 @@ function AdminPortal() {
               max="2099"
               value={formState.year}
               onChange={(event) => updateField('year', event.target.value)}
-              required
+              required={formState.resourceType !== 'Textbook'}
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               placeholder="2026"
             />
