@@ -14,17 +14,23 @@ const getResources = asyncHandler(async (req, res) => {
   if (department) filter.department = department;
   if (semester) filter.semester = Number(semester);
   if (resourceType) filter.resourceType = resourceType;
-  if (subjectCode) filter.subjectCode = subjectCode.toString().trim().toUpperCase();
+  if (subjectCode) filter.subjectCode = { $regex: subjectCode.trim(), $options: 'i' };
   if (year) filter.year = Number(year);
   if (examType) filter.examType = examType;
+
   if (search && search.trim()) {
-    filter.$text = { $search: search.trim() };
+    const searchRegex = { $regex: search.trim(), $options: 'i' };
+    filter.$or = [
+      { title: searchRegex },
+      { subjectCode: searchRegex },
+      { tags: searchRegex }
+    ];
   }
 
   const totalResources = await Resource.countDocuments(filter);
 
   const resources = await Resource.find(filter)
-    .sort(search && search.trim() ? { score: { $meta: 'textScore' } } : { createdAt: -1 })
+    .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .lean();
