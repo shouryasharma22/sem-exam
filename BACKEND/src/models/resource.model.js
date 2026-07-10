@@ -50,7 +50,8 @@ const resourceSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true
-    }
+    },
+    publicId: { type: String, required: true }
   },
   { timestamps: true }
 );

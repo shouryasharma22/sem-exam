@@ -1,5 +1,5 @@
 import Resource from '../models/resource.model.js';
-import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -27,35 +27,26 @@ const uploadResource = asyncHandler(async (req, res) => {
   } = req.body;
 
   const requiredFields = [title, department, semester, resourceType, subjectCode, year];
-  if (requiredFields.some((field) => field === undefined || field === null || field === '')) {
+  if (requiredFields.some((field) => field === undefined || field === null || String(field).trim() === '')) {
     throw new ApiError(400, 'All required metadata fields must be provided');
   }
-  // Debug: log incoming file presence and auth header for troubleshooting
-  try {
-    console.debug('Admin upload headers:', {
-      hasAdminToken: !!(req.headers['x-admin-token'] || req.headers.authorization),
-      contentType: req.headers['content-type']
-    });
-    console.debug('Uploaded file info:', {
-      path: req.file?.path,
-      originalname: req.file?.originalname,
-      mimetype: req.file?.mimetype,
-      size: req.file?.size
-    });
-  } catch (dE) {
-    console.warn('Failed to log upload debug info', dE);
-  }
+
+  const publicId = `${subjectCode}_${examType || 'Other'}_${year}_${Date.now()}`
+    .replace(/\s+/g, '_')
+    .toUpperCase();
 
   let uploadedFile;
   try {
-    uploadedFile = await uploadOnCloudinary(req.file.path);
+    uploadedFile = await uploadOnCloudinary(req.file.path, publicId);
   } catch (err) {
-    const status = err?.http_code || 502;
-    throw new ApiError(status, `Failed to upload file to cloud storage: ${err?.message || 'unknown error'}`);
+    console.error('Admin upload cloud storage error:', err);
+    const statusCode = err?.http_code || err?.status || 500;
+    const errorMessage = err?.message || 'Unknown upstream storage gateway exception';
+    throw new ApiError(statusCode, `Failed to upload file to cloud storage: ${errorMessage}`, [errorMessage]);
   }
 
   if (!uploadedFile?.secure_url) {
-    throw new ApiError(500, 'Failed to upload file to cloud storage');
+    throw new ApiError(500, 'Failed to upload file to cloud storage', ['Cloudinary response missing secure_url']);
   }
 
   const normalizedTags = Array.isArray(tags)
@@ -65,13 +56,14 @@ const uploadResource = asyncHandler(async (req, res) => {
       : [];
 
   const resource = new Resource({
-    title,
-    department,
+    title: title.trim(),
+    department: department.trim(),
     semester: Number(semester),
-    resourceType,
-    subjectCode: subjectCode.toString().toUpperCase(),
+    resourceType: resourceType.trim(),
+    subjectCode: subjectCode.toString().trim().toUpperCase(),
     year: Number(year),
     examType: examType || 'Other',
+    publicId: uploadedFile.public_id,
     fileUrl: uploadedFile.secure_url,
     tags: normalizedTags,
     isActive: true
@@ -84,4 +76,40 @@ const uploadResource = asyncHandler(async (req, res) => {
   );
 });
 
-export { getAdminDashboard, uploadResource };
+const deleteResource = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const resource = await Resource.findById(id);
+  if (!resource) {
+    throw new ApiError(404, 'Resource not found');
+  }
+
+let cloudinaryResult = { result: 'not found' };
+if (resource.publicId) {
+  try {
+    cloudinaryResult = await deleteFromCloudinary(resource.publicId);
+  } catch (err) {
+    const statusCode = err?.http_code || err?.status || 500;
+    throw new ApiError(statusCode, `Failed to delete file from cloud storage: ${err?.message || 'Unknown error'}`);
+  }
+}
+
+if (cloudinaryResult?.result !== 'ok' && cloudinaryResult?.result !== 'not found') {
+  throw new ApiError(500, 'Unexpected response from cloud storage during deletion', [cloudinaryResult]);
+}
+
+  await Resource.findByIdAndDelete(id);
+
+  res.status(200).json(
+    new ApiResponse(200, { id, cloudinaryStatus: cloudinaryResult?.result }, 'Resource deleted successfully')
+  );
+});
+
+const verifiedAdminToken = asyncHandler(async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Administrative token signature verified successfully.'
+  });
+});
+
+export { getAdminDashboard, uploadResource, deleteResource, verifiedAdminToken };

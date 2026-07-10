@@ -4,6 +4,9 @@ import Navbar from './components/layout/Navbar';
 import Dashboard from './pages/Dashboard';
 import AdminPortal from './pages/AdminPortal';
 import AdminGuard from './components/common/AdminGuard';
+import AdminResourcesPage from './pages/AdminResourcePage';
+import PyqsPage from './pages/PyqsPage';
+import NotesPage from './pages/NotesPage';
 import './App.css';
 
 function App() {
@@ -23,6 +26,16 @@ function App() {
                 element={
                   <AdminGuard>
                     <AdminPortal />
+                  </AdminGuard>
+                } 
+              />
+              <Route path="/pyqs" element={<PyqsPage />} />
+              <Route path="/notes" element={<NotesPage />} />
+              <Route 
+                path="/admin/resources" 
+                element={
+                  <AdminGuard>
+                    <AdminResourcesPage  />
                   </AdminGuard>
                 } 
               />

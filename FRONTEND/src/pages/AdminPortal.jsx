@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { uploadResource } from '../api/resourceApi';
+import { departments, examTypes } from '../constants/academic'
 
 const initialFormState = {
   title: '',
@@ -14,9 +15,7 @@ const initialFormState = {
   adminToken: '',
 };
 
-const departments = ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical'];
 const resourceTypes = ['Exam Paper', 'Textbook', 'Class Notes'];
-const examTypes = ['Mid-Sem', 'End-Sem', 'Other'];
 const semesters = Array.from({ length: 8 }, (_, index) => index + 1);
 
 function AdminPortal() {

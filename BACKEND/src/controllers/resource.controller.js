@@ -4,7 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const getResources = asyncHandler(async (req, res) => {
-  const { department, semester, resourceType, search = '' } = req.query;
+  const { department, semester, resourceType, subjectCode, year, examType, search = '' } = req.query;
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
   const limit = Math.max(parseInt(req.query.limit, 10) || 12, 1);
   const skip = (page - 1) * limit;
@@ -14,6 +14,9 @@ const getResources = asyncHandler(async (req, res) => {
   if (department) filter.department = department;
   if (semester) filter.semester = Number(semester);
   if (resourceType) filter.resourceType = resourceType;
+  if (subjectCode) filter.subjectCode = subjectCode.toString().trim().toUpperCase();
+  if (year) filter.year = Number(year);
+  if (examType) filter.examType = examType;
   if (search && search.trim()) {
     filter.$text = { $search: search.trim() };
   }

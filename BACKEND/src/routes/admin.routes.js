@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAdminDashboard, uploadResource } from '../controllers/admin.controller.js';
+import { getAdminDashboard, uploadResource , deleteResource, verifiedAdminToken} from '../controllers/admin.controller.js';
 import {verifyAdminToken} from '../middlewares/tokenAuth.middleware.js';
 import upload from '../middlewares/multer.middleware.js';
 
@@ -7,11 +7,6 @@ const router = Router();
 
 router.get('/dashboard', verifyAdminToken, getAdminDashboard);
 router.post('/upload', verifyAdminToken, upload.single('resourceFile'), uploadResource);
-router.post('/verify', verifyAdminToken, (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: 'Administrative token cluster node signature verified successfully.'
-  });
-});
-
+router.post('/verify', verifyAdminToken,verifiedAdminToken);
+router.delete('/resources/:id', verifyAdminToken, deleteResource);
 export default router;
