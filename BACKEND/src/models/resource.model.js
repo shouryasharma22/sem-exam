@@ -15,7 +15,10 @@ const resourceSchema = new mongoose.Schema(
     semester: {
       type: Number,
       min: 1,
-      max: 8
+      max: 8,
+      required: function () {
+      return this.resourceType !== 'Textbook';
+    }
     },
     resourceType: {
       type: String,
@@ -30,12 +33,18 @@ const resourceSchema = new mongoose.Schema(
       index: true
     },
     year: {
-      type: Number
+      type: Number,
+      required: function () {
+      return this.resourceType !== 'Textbook';
+    }
     },
     examType: {
       type: String,
       enum: ['Mid-Sem', 'Final', 'Quiz', 'Assignment', 'Other'],
-      default: 'Other'
+      default: 'Other',
+      required: function () {
+      return this.resourceType !== 'Textbook';
+    }
     },
     fileUrl: {
       type: String,

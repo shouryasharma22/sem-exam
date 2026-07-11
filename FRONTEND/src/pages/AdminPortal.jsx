@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { uploadResource } from '../api/resourceApi';
-import { departmentsList, examTypes } from '../constants/academic'
+import { departmentsList, examTypes } from '../constants/academic';
 
 const initialFormState = {
   title: '',
   subjectCode: '',
-  department: '',
+  department: '', // 🟩 Starts completely empty
   semester: '',
   resourceType: 'Exam Paper',
   examType: 'End-Sem',
@@ -66,6 +66,7 @@ function AdminPortal() {
   };
 
   return (
+    
     <section className="space-y-6">
       <header className="rounded-3xl border border-slate-200 bg-white px-6 py-6 shadow-sm">
         <div className="max-w-3xl">
@@ -76,19 +77,21 @@ function AdminPortal() {
           </p>
         </div>
       </header>
+  {/*add id and name to all form fields */}
 
       {status && (
         <div
-          className={`rounded-3xl border p-5 text-sm ${status.type === 'success'
+          className={`rounded-3xl border p-5 text-sm ${
+            status.type === 'success'
               ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
               : 'border-rose-200 bg-rose-50 text-rose-700'
-            }`}
+          }`}
         >
           {status.message}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid gap-6 rounded-3xl border border-slate-200 bg-white px-6 py-6 shadow-sm">
+      <form id="resource-upload-form" name="resource-upload-form" onSubmit={handleSubmit} className="grid gap-6 rounded-3xl border border-slate-200 bg-white px-6 py-6 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-2">
           <label className="block">
             <span className="text-sm font-semibold text-slate-600">Title</span>
@@ -96,6 +99,8 @@ function AdminPortal() {
               value={formState.title}
               onChange={(event) => updateField('title', event.target.value)}
               required
+              id="title"
+              name="title"
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               placeholder="Resource title"
             />
@@ -107,20 +112,23 @@ function AdminPortal() {
               value={formState.subjectCode}
               onChange={(event) => updateField('subjectCode', event.target.value)}
               required
+              id="subjectCode"
+              name="subjectCode"
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               placeholder="CS101"
             />
           </label>
-
           <label className="block">
             <span className="text-sm font-semibold text-slate-600">Department</span>
             <select
+              id="department"
+              name="department"
               value={formState.department}
               onChange={(event) => updateField('department', event.target.value)}
               required
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
-              {/* 🟩 FIXED CORRECT WAY */}
+              <option value="">Select department</option>
               {departmentsList.map((dept) => (
                 <option key={dept.id} value={dept.id}>
                   {dept.name}
@@ -132,6 +140,8 @@ function AdminPortal() {
           <label className="block">
             <span className="text-sm font-semibold text-slate-600">Semester</span>
             <select
+              id="semester"
+              name="semester"
               value={formState.semester}
               onChange={(event) => updateField('semester', event.target.value)}
               required={formState.resourceType !== 'Textbook'}
@@ -149,11 +159,14 @@ function AdminPortal() {
           <label className="block">
             <span className="text-sm font-semibold text-slate-600">Resource Type</span>
             <select
+              id="resourceType"
+              name="resourceType"
               value={formState.resourceType}
               onChange={(event) => updateField('resourceType', event.target.value)}
               required
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
+              <option value="">Select resource type</option>
               {resourceTypes.map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -165,11 +178,14 @@ function AdminPortal() {
           <label className="block">
             <span className="text-sm font-semibold text-slate-600">Exam Type</span>
             <select
+              id="examType"
+              name="examType"
               value={formState.examType}
               onChange={(event) => updateField('examType', event.target.value)}
               required={formState.resourceType !== 'Textbook'}
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
+              <option value="">Select exam type</option>
               {examTypes.map((examType) => (
                 <option key={examType} value={examType}>
                   {examType}
@@ -181,6 +197,8 @@ function AdminPortal() {
           <label className="block">
             <span className="text-sm font-semibold text-slate-600">Year</span>
             <input
+              id="year"
+              name="year"
               type="number"
               min="2000"
               max="2099"
@@ -195,6 +213,8 @@ function AdminPortal() {
           <label className="block">
             <span className="text-sm font-semibold text-slate-600">Admin Authentication Token</span>
             <input
+              id="adminToken"
+              name="adminToken"
               type="password"
               value={formState.adminToken}
               onChange={(event) => updateField('adminToken', event.target.value)}
@@ -208,6 +228,8 @@ function AdminPortal() {
         <label className="block">
           <span className="text-sm font-semibold text-slate-600">Attach file</span>
           <input
+            id="resourceFile"
+            name="resourceFile"
             type="file"
             accept="application/pdf,image/*"
             onChange={(event) => updateField('resourceFile', event.target.files?.[0] || null)}
@@ -219,6 +241,9 @@ function AdminPortal() {
         <label className="block">
           <span className="text-sm font-semibold text-slate-600">Tags</span>
           <input
+            id="tags"
+            name="tags"
+            
             value={formState.tags}
             onChange={(event) => updateField('tags', event.target.value)}
             className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"

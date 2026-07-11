@@ -26,19 +26,25 @@ const uploadResource = asyncHandler(async (req, res) => {
     tags
   } = req.body;
 
-  const rt = resourceType ? String(resourceType).trim() : '';
-  // Accept only 'Textbook' values from clients (case-insensitive)
-  const isTextbook = ['textbook'].includes(rt.toLowerCase());
+  // 🟩 1. Identify context early
+  const isTextbook = String(resourceType).trim().toLowerCase() === 'textbook';
 
-  // Base required metadata for all resource types
-  const requiredFields = [title, department, resourceType, subjectCode];
-  // For non-textbook resources, semester and year remain required
+  // 🟩 2. Build explicit tracking maps
+  const errors = [];
+  if (!title?.trim()) errors.push('title');
+  if (!department?.trim()) errors.push('department');
+  if (!resourceType?.trim()) errors.push('resourceType');
+  if (!subjectCode?.trim()) errors.push('subjectCode');
+
+  // Only demand timeline markers if it's an exam or class notes asset
   if (!isTextbook) {
-    requiredFields.push(semester, year);
+    if (!semester || String(semester).trim() === '') errors.push('semester');
+    if (!year || String(year).trim() === '') errors.push('year');
   }
 
-  if (requiredFields.some((field) => field === undefined || field === null || String(field).trim() === '')) {
-    throw new ApiError(400, 'All required metadata fields must be provided');
+  // 🟩 3. Halt the train instantly if metadata is corrupt
+  if (errors.length > 0) {
+    throw new ApiError(400, `Validation Failed. Missing fields: ${errors.join(', ')}`);
   }
 
   const publicId = `${subjectCode}_${(examType || 'Other')}_${(year || 'NA')}_${Date.now()}`

@@ -1,244 +1,266 @@
 import { useState } from 'react';
+import { uploadResource } from '../api/resourceApi';
+import { departmentsList, examTypes } from '../constants/academic';
 
-export default function AdminPortal({ adminToken }) {
-  // Form Field States
-  const [title, setTitle] = useState('');
-  const [subjectCode, setSubjectCode] = useState('');
-  const [department, setDepartment] = useState('computer science');
-  const [semester, setSemester] = useState('3');
-  const [resourceType, setResourceType] = useState('Exam Paper');
-  const [examType, setExamType] = useState('End-Sem');
-  const [year, setYear] = useState(new Date().getFullYear().toString());
-  const [file, setFile] = useState(null);
-  const [tagsInput, setTagsInput] = useState('');
+const initialFormState = {
+  title: '',
+  subjectCode: '',
+  department: '', // 🟩 Starts completely empty
+  semester: '',
+  resourceType: 'Exam Paper',
+  examType: 'End-Sem',
+  year: '',
+  tags: '',
+  resourceFile: null,
+  adminToken: '',
+};
 
-  // Status Management States
+const resourceTypes = ['Exam Paper', 'Textbook', 'Class Notes'];
+const semesters = Array.from({ length: 8 }, (_, index) => index + 1);
+
+function AdminPortal() {
+  const [formState, setFormState] = useState(initialFormState);
+  const [status, setStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState(null);
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
+  const updateField = (field, value) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      setMessage({ type: 'error', text: 'Operational layout error: Physical asset file attachment is required.' });
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setStatus(null);
+
+    if (!formState.adminToken) {
+      setStatus({ type: 'error', message: 'Admin authentication token is required.' });
       return;
     }
 
+    if (!formState.resourceFile) {
+      setStatus({ type: 'error', message: 'Please attach a PDF or image document for upload.' });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', formState.title);
+    formData.append('subjectCode', formState.subjectCode);
+    formData.append('department', formState.department);
+    formData.append('semester', formState.semester);
+    formData.append('resourceType', formState.resourceType);
+    formData.append('examType', formState.examType);
+    formData.append('year', formState.year);
+    formData.append('tags', formState.tags);
+    formData.append('resourceFile', formState.resourceFile);
+
+    setIsSubmitting(true);
+
     try {
-      setIsSubmitting(true);
-      setMessage({ type: 'info', text: 'Initializing cloud storage upload pipeline...' });
-
-      // 📦 Building multipart Form Data packet to transport raw streams
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('subjectCode', subjectCode.toUpperCase().trim());
-      formData.append('department', department);
-      formData.append('semester', Number(semester));
-      formData.append('resourceType', resourceType);
-      formData.append('examType', resourceType === 'Exam Paper' ? examType : 'Other');
-      formData.append('year', Number(year));
-      formData.append('resourceFile', file); // Matches your uploadFile local Multer destination criteria key!
-
-      // Parse tags comma-separated string into a clean array structure
-      if (tagsInput.trim()) {
-        const parsedTags = tagsInput.split(',').map(tag => tag.trim().replace('#', '')).filter(Boolean);
-        parsedTags.forEach(tag => formData.append('tags[]', tag));
-      }
-
-      // Direct streaming hit to your local Express deployment layer
-      const response = await fetch('http://localhost:8000/api/v1/admin/upload', {
-        method: 'POST',
-        headers: {
-          'x-admin-token': adminToken // 🔑 Passing along your secret verification handshake string
-        },
-        body: formData
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        setMessage({ type: 'success', text: 'Transaction absolute. Asset successfully committed to Cloudinary and MongoDB indexing engines.' });
-        // Reset primary text fields safely
-        setTitle('');
-        setSubjectCode('');
-        setFile(null);
-        setTagsInput('');
-        // Reset file input component visually
-        e.target.reset();
-      } else {
-        throw new Error(result.message || 'Pipeline rejected transmission.');
-      }
-    } catch (err) {
-      console.error('Data transport transmission failure:', err);
-      setMessage({ type: 'error', text: `Transmission failed: ${err.message}` });
+      await uploadResource(formData, formState.adminToken);
+      setStatus({ type: 'success', message: 'Resource uploaded successfully.' });
+      setFormState(initialFormState);
+    } catch (error) {
+      setStatus({ type: 'error', message: error.message || 'Upload failed due to a validation error.' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-[#0F1422] border border-slate-800 rounded-2xl p-8 shadow-2xl">
-      <div className="border-b border-slate-800 pb-5 mb-6">
-        <h2 className="text-xl font-bold text-white font-mono tracking-tight">admin.deploy_asset()</h2>
-        <p className="text-xs text-slate-400 mt-1">Commit new study materials directly into the production cluster nodes.</p>
-      </div>
+    
+    <section className="space-y-6">
+      <header className="rounded-3xl border border-slate-200 bg-white px-6 py-6 shadow-sm">
+        <div className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Admin Portal</p>
+          <h1 className="mt-3 text-3xl font-semibold text-slate-900">Upload student resources</h1>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            Submit new materials with metadata, file attachments, and admin authentication for secure publishing.
+          </p>
+        </div>
+      </header>
+  {/*add id and name to all form fields */}
 
-      {message && (
-        <div className={`p-4 rounded-xl border text-xs font-mono mb-6 transition-all ${
-          message.type === 'error' ? 'bg-red-950/20 border-red-900 text-red-400' :
-          message.type === 'success' ? 'bg-emerald-950/20 border-emerald-900 text-emerald-400' :
-          'bg-blue-950/20 border-blue-900 text-blue-400 animate-pulse'
-        }`}>
-          [{message.type.toUpperCase()}]: {message.text}
+      {status && (
+        <div
+          className={`rounded-3xl border p-5 text-sm ${
+            status.type === 'success'
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+              : 'border-rose-200 bg-rose-50 text-rose-700'
+          }`}
+        >
+          {status.message}
         </div>
       )}
 
-      <form onSubmit={handleFormSubmit} className="space-y-5">
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Resource Title</label>
-          <input
-            type="text"
-            required
-            placeholder="e.g., Data Structures & Algorithms End-Sem Paper"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-[#070A12] border border-slate-800 focus:border-blue-500 text-slate-100 rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Subject Course Code</label>
+      <form id="resource-upload-form" name="resource-upload-form" onSubmit={handleSubmit} className="grid gap-6 rounded-3xl border border-slate-200 bg-white px-6 py-6 shadow-sm">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-600">Title</span>
             <input
-              type="text"
+              value={formState.title}
+              onChange={(event) => updateField('title', event.target.value)}
               required
-              placeholder="e.g., CS201"
-              value={subjectCode}
-              onChange={(e) => setSubjectCode(e.target.value)}
-              className="w-full bg-[#070A12] border border-slate-800 focus:border-blue-500 text-slate-100 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none transition-colors placeholder:font-sans"
+              id="title"
+              name="title"
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              placeholder="Resource title"
             />
-          </div>
+          </label>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Academic Department</label>
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-600">Subject Code</span>
+            <input
+              value={formState.subjectCode}
+              onChange={(event) => updateField('subjectCode', event.target.value)}
+              required
+              id="subjectCode"
+              name="subjectCode"
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              placeholder="CS101"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-600">Department</span>
             <select
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="w-full bg-[#070A12] border border-slate-800 focus:border-blue-500 text-slate-100 rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors capitalize"
+              id="department"
+              name="department"
+              value={formState.department}
+              onChange={(event) => updateField('department', event.target.value)}
+              required
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
-              <option value="computer science">Computer Science</option>
-              <option value="information technology">Information Technology</option>
-              <option value="electronics">Electronics</option>
-              <option value="mechanical">Mechanical</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Target Semester</label>
-            <select
-              value={semester}
-              onChange={(e) => setSemester(e.target.value)}
-              className="w-full bg-[#070A12] border border-slate-800 focus:border-blue-500 text-slate-100 rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors"
-            >
-              {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                <option key={num} value={num}>Semester {num}</option>
+              <option value="">Select department</option>
+              {departmentsList.map((dept) => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.name}
+                </option>
               ))}
             </select>
-          </div>
+          </label>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Resource Structure</label>
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-600">Semester</span>
             <select
-              value={resourceType}
-              onChange={(e) => setResourceType(e.target.value)}
-              className="w-full bg-[#070A12] border border-slate-800 focus:border-blue-500 text-slate-100 rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors"
+              id="semester"
+              name="semester"
+              value={formState.semester}
+              onChange={(event) => updateField('semester', event.target.value)}
+              required={formState.resourceType !== 'Textbook'}
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
-              <option value="Exam Paper">Exam Paper</option>
-              <option value="Textbook">Textbook</option>
-              <option value="Class Notes">Class Notes</option>
+              <option value="">Select semester</option>
+              {semesters.map((semester) => (
+                <option key={semester} value={semester}>
+                  Semester {semester}
+                </option>
+              ))}
             </select>
-          </div>
+          </label>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Calendar Year</label>
-            <input
-              type="number"
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-600">Resource Type</span>
+            <select
+              id="resourceType"
+              name="resourceType"
+              value={formState.resourceType}
+              onChange={(event) => updateField('resourceType', event.target.value)}
               required
-              min="2000"
-              max="2030"
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-              className="w-full bg-[#070A12] border border-slate-800 focus:border-blue-500 text-slate-100 rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors"
-            />
-          </div>
-        </div>
-
-        {resourceType === 'Exam Paper' && (
-          <div className="bg-[#070A12] border border-slate-800/60 p-4 rounded-xl animate-fadeIn">
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Evaluation Cycle Subtype</label>
-            <div className="flex gap-4">
-              {['Mid-Sem', 'End-Sem', 'Other'].map((type) => (
-                <label key={type} className="flex items-center gap-2 text-sm text-slate-200 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="examType"
-                    value={type}
-                    checked={examType === type}
-                    onChange={(e) => setExamType(e.target.value)}
-                    className="accent-blue-500"
-                  />
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            >
+              <option value="">Select resource type</option>
+              {resourceTypes.map((type) => (
+                <option key={type} value={type}>
                   {type}
-                </label>
+                </option>
               ))}
-            </div>
-          </div>
-        )}
+            </select>
+          </label>
 
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Metadata Search Tags (Comma Separated)</label>
-          <input
-            type="text"
-            placeholder="e.g., #stack, #queue, #trees, #2025"
-            value={tagsInput}
-            onChange={(e) => setTagsInput(e.target.value)}
-            className="w-full bg-[#070A12] border border-slate-800 focus:border-blue-500 text-slate-100 rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors"
-          />
-        </div>
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-600">Exam Type</span>
+            <select
+              id="examType"
+              name="examType"
+              value={formState.examType}
+              onChange={(event) => updateField('examType', event.target.value)}
+              required={formState.resourceType !== 'Textbook'}
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            >
+              <option value="">Select exam type</option>
+              {examTypes.map((examType) => (
+                <option key={examType} value={examType}>
+                  {examType}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Asset File Payload (.PDF Only)</label>
-          <div className="border border-dashed border-slate-800 bg-[#070A12] rounded-xl p-6 text-center hover:border-slate-700 transition-colors relative cursor-pointer">
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-600">Year</span>
             <input
-              type="file"
-              required
-              accept=".pdf"
-              onChange={handleFileChange}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              id="year"
+              name="year"
+              type="number"
+              min="2000"
+              max="2099"
+              value={formState.year}
+              onChange={(event) => updateField('year', event.target.value)}
+              required={formState.resourceType !== 'Textbook'}
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              placeholder="2026"
             />
-            <div className="space-y-1 text-xs">
-              <p className="text-slate-200 font-medium">
-                {file ? `📎 Target selected: ${file.name}` : 'Click to anchor file stream or drag-and-drop here'}
-              </p>
-              <p className="text-slate-500">Maximum allocation weight threshold: 16 Megabytes</p>
-            </div>
-          </div>
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-600">Admin Authentication Token</span>
+            <input
+              id="adminToken"
+              name="adminToken"
+              type="password"
+              value={formState.adminToken}
+              onChange={(event) => updateField('adminToken', event.target.value)}
+              required
+              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              placeholder="Enter admin token"
+            />
+          </label>
         </div>
+
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-600">Attach file</span>
+          <input
+            id="resourceFile"
+            name="resourceFile"
+            type="file"
+            accept="application/pdf,image/*"
+            onChange={(event) => updateField('resourceFile', event.target.files?.[0] || null)}
+            required
+            className="mt-2 w-full text-sm text-slate-600"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-semibold text-slate-600">Tags</span>
+          <input
+            id="tags"
+            name="tags"
+            
+            value={formState.tags}
+            onChange={(event) => updateField('tags', event.target.value)}
+            className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            placeholder="exam, notes, pdf"
+          />
+        </label>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-3 px-4 rounded-xl transition-colors font-mono tracking-wide ${isSubmitting ? 'opacity-40 cursor-not-allowed animate-pulse' : ''}`}
+          className="inline-flex items-center justify-center rounded-3xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
         >
-          {isSubmitting ? 'EXECUTING_CLOUD_COMMIT...' : 'EXECUTE_TRANSACTION()'}
+          {isSubmitting ? 'Submitting…' : 'Submit resource'}
         </button>
       </form>
-    </div>
+    </section>
   );
 }
+
+export default AdminPortal;
