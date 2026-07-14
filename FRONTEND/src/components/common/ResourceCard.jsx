@@ -80,44 +80,30 @@ function ResourceCard({ resource, isAdmin = false, onDelete }) {
             </span>
           )}
         </div>
-
-        <div className="mb-6 flex flex-wrap gap-1.5">
-          {Array.isArray(tags) && tags.length > 0 ? (
-            tags.map((tag) => (
-              <span key={tag} className="text-[11px] font-mono text-[#8d90a0] hover:text-[#b4c5ff] transition-colors">
-                #{String(tag).trim()}
-              </span>
-            ))
-          ) : (
-            <span className="text-[11px] font-mono text-slate-600 italic">#no_tags</span>
-          )}
-        </div>
       </div>
-
       <div className="mt-4 pt-4 border-t border-[#434655]/30">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#8d90a0]">Payload Source</p>
-            <p className="text-xs text-[#c3c6d7] font-mono">Secure CDN Node</p>
-          </div>
+        {/* 🟩 Added w-full to make the container stretch and changed gap spacing */}
+        <div className="flex items-center justify-between gap-3 w-full">
 
-          <div className="flex items-center gap-2">
+          {/* 🟩 Added flex-1 and w-full here to allow children to fill the entire horizontal space */}
+          <div className="flex items-center gap-2 w-full flex-1">
             {isAdmin && (
               <button
                 type="button"
                 onClick={handleDeleteClick}
                 disabled={deleting}
                 aria-label={`Delete ${title}`}
-                className="inline-flex items-center justify-center rounded-xl bg-[#151b2d] border border-[#434655] p-2.5 text-red-400/70 transition-all duration-200 hover:border-red-500/50 hover:text-red-400 focus:outline-none focus:ring-1 focus:ring-red-500/50 disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-xl bg-[#151b2d] border border-[#434655] p-2.5 text-red-400/70 transition-all duration-200 hover:border-red-500/50 hover:text-red-400 focus:outline-none focus:ring-1 focus:ring-red-500/50 disabled:opacity-50 shrink-0"
               >
                 <Trash2 size={14} />
               </button>
             )}
             
+            {/* 🟩 Added w-full and justify-center to stretch the View button */}
             <a href={getViewablePdfUrl(fileUrl)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center rounded-xl bg-[#151b2d] border border-[#434655] px-4 py-2.5 text-xs font-mono text-slate-300 transition-all duration-200 hover:border-[#b4c5ff] hover:text-[#b4c5ff] focus:outline-none focus:ring-1 focus:ring-[#b4c5ff]"
+              className="inline-flex items-center justify-center w-full rounded-xl bg-[#151b2d] border border-[#434655] px-4 py-2.5 text-xs font-mono text-slate-300 transition-all duration-200 hover:border-[#b4c5ff] hover:text-[#b4c5ff] focus:outline-none focus:ring-1 focus:ring-[#b4c5ff]"
             >
               View
             </a>
@@ -135,7 +121,7 @@ function ResourceCard({ resource, isAdmin = false, onDelete }) {
                 type="button"
                 onClick={handleConfirmDelete}
                 disabled={deleting}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-1.5 text-xs font-mono text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-1.5 text-xs font-mono text-red-300 hover:bg-red-500/20 disabled:opacity-50 flex-1"
               >
                 {deleting && <Loader2 size={12} className="animate-spin" />}
                 {deleting ? 'Deleting…' : 'Confirm delete'}
@@ -144,7 +130,7 @@ function ResourceCard({ resource, isAdmin = false, onDelete }) {
                 type="button"
                 onClick={() => setConfirming(false)}
                 disabled={deleting}
-                className="rounded-lg border border-[#434655] px-3 py-1.5 text-xs font-mono text-slate-400 hover:text-slate-200 disabled:opacity-50"
+                className="rounded-lg border border-[#434655] px-3 py-1.5 text-xs font-mono text-slate-400 hover:text-slate-200 disabled:opacity-50 flex-1"
               >
                 Cancel
               </button>

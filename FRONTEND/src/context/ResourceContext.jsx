@@ -8,17 +8,22 @@ export function ResourceProvider({ children }) {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // 🟩 All filter states now live globally in the context
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [selectedSemester, setSelectedSemester] = useState('');
+  const [department, setDepartment] = useState('');
+  const [subjectCode, setSubjectCode] = useState('');
+  const [year, setYear] = useState('');
+  const [examType, setExamType] = useState('');
+  const [resourceType, setResourceType] = useState('');
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedSubjectCode = useDebounce(subjectCode, 300);
 
   useEffect(() => {
     async function loadInitialResources() {
       setLoading(true);
       setError(null);
-
       try {
         const data = await fetchResources();
         setResources(Array.isArray(data) ? data : []);
@@ -28,35 +33,42 @@ export function ResourceProvider({ children }) {
         setLoading(false);
       }
     }
-
     loadInitialResources();
   }, []);
 
+  // 🟩 Single, optimized filtration pipeline
   const filteredResources = useMemo(() => {
     return resources.filter((resource) => {
-      const title = String(resource.title || '').toLowerCase();
-      const subjectCode = String(resource.subjectCode || '').toLowerCase();
-      const department = String(resource.department || '').toLowerCase();
-      const semester = String(resource.semester ?? '').toLowerCase();
-      const query = debouncedSearchQuery.trim().toLowerCase();
-      const departmentFilter = selectedDepartment.trim().toLowerCase();
-      const semesterFilter = selectedSemester.trim();
+      const matchesSearch = !debouncedSearchQuery.trim() || 
+        String(resource.title || '').toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        String(resource.subjectCode || '').toLowerCase().includes(debouncedSearchQuery.toLowerCase());
 
-      const matchesSearch =
-        !query || title.includes(query) || subjectCode.includes(query);
-      const matchesDepartment =
-        !departmentFilter || department.includes(departmentFilter);
-      const matchesSemester =
-        !semesterFilter || semester === semesterFilter;
+      const matchesDept = !department || 
+        String(resource.department || '').toLowerCase() === department.toLowerCase();
 
-      return matchesSearch && matchesDepartment && matchesSemester;
+      const matchesSubject = !debouncedSubjectCode.trim() || 
+        String(resource.subjectCode || '').toLowerCase().includes(debouncedSubjectCode.toLowerCase());
+
+      const matchesYear = !year || 
+        String(resource.year || '') === String(year);
+
+      const matchesExamType = !examType || 
+        String(resource.examType || '').toLowerCase() === examType.toLowerCase();
+
+      const matchesResourceType = !resourceType || 
+        String(resource.resourceType || '').toLowerCase() === resourceType.toLowerCase();
+
+      return matchesSearch && matchesDept && matchesSubject && matchesYear && matchesExamType && matchesResourceType;
     });
-  }, [resources, debouncedSearchQuery, selectedDepartment, selectedSemester]);
+  }, [resources, debouncedSearchQuery, department, debouncedSubjectCode, year, examType, resourceType]);
 
   const clearFilters = () => {
     setSearchQuery('');
-    setSelectedDepartment('');
-    setSelectedSemester('');
+    setDepartment('');
+    setSubjectCode('');
+    setYear('');
+    setExamType('');
+    setResourceType('');
   };
 
   const value = useMemo(
@@ -66,14 +78,20 @@ export function ResourceProvider({ children }) {
       loading,
       error,
       searchQuery,
-      selectedDepartment,
-      selectedSemester,
+      department,
+      subjectCode,
+      year,
+      examType,
+      resourceType,
       setSearchQuery,
-      setSelectedDepartment,
-      setSelectedSemester,
+      setDepartment,
+      setSubjectCode,
+      setYear,
+      setExamType,
+      setResourceType,
       clearFilters,
     }),
-    [resources, filteredResources, loading, error, searchQuery, selectedDepartment, selectedSemester]
+    [resources, filteredResources, loading, error, searchQuery, department, subjectCode, year, examType, resourceType]
   );
 
   return <ResourceContext.Provider value={value}>{children}</ResourceContext.Provider>;

@@ -4,34 +4,33 @@ import { useResource } from '../context/ResourceContext';
 import ResourceCard from '../components/common/ResourceCard';
 import { departmentsList, examTypes, getRecentYears } from '../constants/academic.js';
 
-
-
 const years = getRecentYears(12);
-
+const resourceTypes = ['Exam Paper', 'Textbook', 'Class Notes'];
 
 export default function Dashboard() {
+  // 🟩 Pull all synchronized state hooks directly from the context
   const {
     filteredResources,
     loading,
     error,
     searchQuery,
     setSearchQuery,
-    selectedDepartment,
-    setSelectedDepartment,
+    department,
+    setDepartment,
+    subjectCode,
+    setSubjectCode,
+    year,
+    setYear,
+    examType,
+    setExamType,
+    resourceType,
+    setResourceType,
+    clearFilters
   } = useResource();
 
-  const [department, setDepartment] = useState('');
-  const [subjectCode, setSubjectCode] = useState('');
-  const [year,  setYear] = useState('');
-  const [examType, setExamType] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const activeFilterCount = [department, subjectCode, year, examType].filter(Boolean).length;
-  const clearFilters = () => {
-    if (department) setDepartment('');
-    if (subjectCode) setSubjectCode('');
-    if (year) setYear('');
-    if (examType) setExamType('');
-  };
+  
+  const activeFilterCount = [department, subjectCode, year, examType, resourceType].filter(Boolean).length;
 
   return (
     <div className="w-full min-h-[calc(100vh-84px)] bg-white">
@@ -42,6 +41,7 @@ export default function Dashboard() {
           </h1>
         </div>
 
+        {/* Search Input and Filter Toggle */}
         <div className="w-full max-w-5xl flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-8">
           <div className="flex-1 relative group">
             <input
@@ -73,7 +73,7 @@ export default function Dashboard() {
 
         {/* Conditional Advanced Filter Drawer */}
         {showFilters && (
-          <div className="w-full max-w-5xl mb-8 grid grid-cols-1 gap-4 rounded-2xl border border-black/10 bg-gray-50 p-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="w-full max-w-5xl mb-8 grid grid-cols-1 gap-4 rounded-2xl border border-black/10 bg-gray-50 p-6 sm:grid-cols-2 lg:grid-cols-5">
             <label className="block">
               <span className="text-xs font-semibold uppercase tracking-wider text-black/50 font-mono">Subject Code</span>
               <input
@@ -113,6 +113,20 @@ export default function Dashboard() {
             </label>
 
             <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-wider text-black/50 font-mono">Resource Type</span>
+              <select
+                value={resourceType}
+                onChange={(e) => setResourceType(e.target.value)}
+                className="mt-2 w-full rounded-xl border border-black/20 bg-white px-3 py-2.5 text-sm text-black outline-none focus:border-[#ff571a]"
+              >
+                <option value="">All types</option>
+                {resourceTypes.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
               <span className="text-xs font-semibold uppercase tracking-wider text-black/50 font-mono">Exam Type</span>
               <select
                 value={examType}
@@ -130,7 +144,7 @@ export default function Dashboard() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex w-fit items-center gap-1.5 rounded-xl border border-black/10 bg-white px-4 py-2 text-xs font-medium text-gray-500 hover:text-red-600 hover:border-red-500/30 cursor-pointer sm:col-span-2 lg:col-span-4 mt-2"
+                className="inline-flex w-fit items-center gap-1.5 rounded-xl border border-black/10 bg-white px-4 py-2 text-xs font-medium text-gray-500 hover:text-red-600 hover:border-red-500/30 cursor-pointer sm:col-span-2 lg:col-span-5 mt-2"
               >
                 <X size={12} />
                 Clear filters
@@ -139,6 +153,7 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Clean Resource Output Grid */}
         <div className="w-full mb-24">
           {loading && (
             <p className="text-center font-mono text-xs text-black/60 animate-pulse">
@@ -149,10 +164,10 @@ export default function Dashboard() {
           {error && <p className="text-center font-mono text-xs text-red-600">Error: {error}</p>}
 
           {!loading && !error && (
+            /* 🟩 Directly map filteredResources from the Context! */
             filteredResources.length === 0 ? (
               <div className="text-center py-12 border border-dashed border-black/20 rounded-xl max-w-2xl mx-auto">
                 <p className="text-black text-sm font-medium">Could not find any resources</p>
-
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
