@@ -144,7 +144,7 @@ function AdminPortal() {
               name="semester"
               value={formState.semester}
               onChange={(event) => updateField('semester', event.target.value)}
-              required={formState.resourceType !== 'Textbook'}
+              required={formState.resourceType !== 'Textbook'&&formState.resourceType !== 'Class Notes'}
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
               <option value="">Select semester</option>
@@ -182,7 +182,7 @@ function AdminPortal() {
               name="examType"
               value={formState.examType}
               onChange={(event) => updateField('examType', event.target.value)}
-              required={formState.resourceType !== 'Textbook'}
+              required={formState.resourceType !== 'Textbook'&&formState.resourceType !== 'Class Notes'}
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
               <option value="">Select exam type</option>
@@ -204,7 +204,7 @@ function AdminPortal() {
               max="2099"
               value={formState.year}
               onChange={(event) => updateField('year', event.target.value)}
-              required={formState.resourceType !== 'Textbook'}
+              required={formState.resourceType !== 'Textbook'&&formState.resourceType !== 'Class Notes'}
               className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               placeholder="2026"
             />

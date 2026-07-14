@@ -27,7 +27,7 @@ const uploadResource = asyncHandler(async (req, res) => {
   } = req.body;
 
   // 🟩 1. Identify context early
-  const isTextbook = String(resourceType).trim().toLowerCase() === 'textbook';
+  const isTextbookOrNotes = String(resourceType).trim().toLowerCase() === 'textbook' || String(resourceType).trim().toLowerCase() === 'class notes';
 
   // 🟩 2. Build explicit tracking maps
   const errors = [];
@@ -37,7 +37,7 @@ const uploadResource = asyncHandler(async (req, res) => {
   if (!subjectCode?.trim()) errors.push('subjectCode');
 
   // Only demand timeline markers if it's an exam or class notes asset
-  if (!isTextbook) {
+  if (!isTextbookOrNotes) {
     if (!semester || String(semester).trim() === '') errors.push('semester');
     if (!year || String(year).trim() === '') errors.push('year');
   }

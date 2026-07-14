@@ -17,7 +17,7 @@ const resourceSchema = new mongoose.Schema(
       min: 1,
       max: 8,
       required: function () {
-      return this.resourceType !== 'Textbook';
+      return this.resourceType !== 'Textbook'&&this.resourceType !== 'Class Notes';
     }
     },
     resourceType: {
@@ -35,7 +35,7 @@ const resourceSchema = new mongoose.Schema(
     year: {
       type: Number,
       required: function () {
-      return this.resourceType !== 'Textbook';
+      return this.resourceType !== 'Textbook'&&this.resourceType !== 'Class Notes';
     }
     },
     examType: {
@@ -43,7 +43,7 @@ const resourceSchema = new mongoose.Schema(
       enum: ['Mid-Sem', 'Final', 'Quiz', 'Assignment', 'Other'],
       default: 'Other',
       required: function () {
-      return this.resourceType !== 'Textbook';
+      return this.resourceType !== 'Textbook'&&this.resourceType !== 'Class Notes';
     }
     },
     fileUrl: {
