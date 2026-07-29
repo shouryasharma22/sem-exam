@@ -9,6 +9,7 @@ import PyqsPage from './pages/PyqsPage';
 import NotesPage from './pages/NotesPage';
 import './App.css';
 import BooksPage from './pages/BooksPage';
+import Footer from './components/common/Footer';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             </Routes>
           </main>
         </div>
+     <Footer />
       </Router>
     </ResourceProvider>
   );
