@@ -40,7 +40,7 @@ const resourceSchema = new mongoose.Schema(
     },
     examType: {
       type: String,
-      enum: ['Mid-Sem', 'Final', 'Quiz', 'Assignment', 'Other'],
+      enum: ['Mid-Sem', 'End-Sem', 'Quiz', 'Other'],
       default: 'Other',
       required: function () {
       return this.resourceType !== 'Textbook'&&this.resourceType !== 'Class Notes';
