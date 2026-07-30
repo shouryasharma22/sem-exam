@@ -4,11 +4,7 @@ const ADMIN_URL = `${API_BASE_URL}/admin`;
 const ADMIN_UPLOAD_URL = `${ADMIN_URL}/upload`;
 const ADMIN_DELETE_URL = `${ADMIN_URL}/resources`;
 
-/**
- * Normalize fetch responses and throw a readable error when status is not OK.
- * @param {Response} response
- * @returns {Promise<any>}
- */
+
 async function parseResponse(response) {
   const json = await response.json().catch(() => null);
   const wrapper = json || {};
@@ -24,14 +20,6 @@ async function parseResponse(response) {
   return wrapper;
 }
 
-/**
- * Fetch resources from the backend and return the parsed resource array.
- * @param {Object} [query] query filters for the resource list
- * @param {string} [query.search] search term
- * @param {string} [query.department] department filter
- * @param {string|number} [query.semester] semester filter
- * @returns {Promise<any[]>}
- */
 export async function fetchResources({
   search = '',
   department = '',
@@ -62,7 +50,7 @@ export async function fetchResources({
     if (Array.isArray(wrapper)) {
       return wrapper;
     }
-    return wrapper.data?.resources ?? wrapper.resources ?? [];
+    return wrapper.data?.resources ?? [];
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Unable to load resources: ${error.message}`);
@@ -70,12 +58,7 @@ export async function fetchResources({
     throw new Error('Unable to load resources due to an unexpected error.');
   }
 }
-/**
- * Upload a resource using multipart/form-data and admin authorization.
- * @param {FormData} formData
- * @param {string} adminToken
- * @returns {Promise<any>}
- */
+
 export const uploadResource = async (formData, adminToken) => {
   try {
     const headers = {
@@ -104,12 +87,7 @@ export const uploadResource = async (formData, adminToken) => {
   }
 };
 
-/**
- * Delete a resource by ID using admin authorization.
- * @param {string} id resource _id
- * @param {string} adminToken
- * @returns {Promise<any>}
- */
+
 export const deleteResource = async (id, adminToken) => {
   const headers = {
     Accept: 'application/json'
