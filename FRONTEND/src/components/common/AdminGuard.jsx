@@ -36,7 +36,7 @@ export default function AdminGuard({ children }) {
           setIsAuthorized(true);
         } else {
           // Token inside storage was invalid or fake
-          alert("Invalid Administrative Signature. Evicting session node.");
+          alert("Invalid Administrative Signature");
           localStorage.removeItem('admin_token');
           setIsAuthorized(false);
           navigate('/', { replace: true });
@@ -56,11 +56,11 @@ export default function AdminGuard({ children }) {
   if (isChecking) {
     return (
       <div className="flex justify-center items-center py-24 bg-[#0B0F19] min-h-screen">
-        <p className="text-blue-500 font-mono text-sm animate-pulse">Running autonomous route challenge verification...</p>
+        <p className="text-blue-500 font-mono text-sm animate-pulse">Verifying admin token....</p>
       </div>
     );
   }
 
-  // 🎉 Complete Match. Render AdminPortal seamlessly.
   return isAuthorized ? children : null;
+  //children is whatever component we wrap inside the <AdminGuard> component . if isauthorized, show the wrapped component.
 }
