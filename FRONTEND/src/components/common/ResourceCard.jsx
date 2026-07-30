@@ -22,7 +22,7 @@ function ResourceCard({ resource, isAdmin = false, onDelete }) {
   const isExamPaper = String(resourceType).toLowerCase() === 'exam paper';
 
   const typeLabel = isExamPaper
-    ? `${examType || 'Exam'} ${year ? String(year) : ''}`.trim()
+    ? `${examType || 'Exam'} `.trim()
     : resourceType;
 
   const typeBadgeClass = isExamPaper
@@ -74,7 +74,7 @@ function ResourceCard({ resource, isAdmin = false, onDelete }) {
               SEM {semester}
             </span>
           )}
-          {year && !isExamPaper && (
+          {year && (
             <span className="rounded bg-[#151b2d] border border-[#434655]/60 px-2.5 py-0.5 text-xs font-mono text-[#c3c6d7]">
               {year}
             </span>

@@ -44,8 +44,8 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFil
         if (!cancelled) setLoading(false);
       }
     })();
-
-    return () => { cancelled = true; };
+    return () => { cancelled = true; }; 
+    //Cleanup function to prevent any changes to state after it gets unmounted. For eg- if i type A and it takes 3s to fetch and in that time i type B which takes 1s to fetch, the cancelled for a will become true so A does not come randomly after B and mess up the input.
   }, [resourceType, debouncedSearch, department, debouncedSubjectCode, year, examType]);
 
   const activeFilterCount = (
@@ -62,6 +62,7 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFil
     if (allowedFilters.examType) setExamType('');
   };
 
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
@@ -69,7 +70,6 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFil
         <p className="mt-2 text-sm text-[#8d90a0]">{pageDescription}</p>
       </div>
 
-      {/* Search + filter toggle */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <div className="flex-1 relative group">
           <input
@@ -100,8 +100,8 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFil
         </button>
       </div>
 
-      {/* Conditional Advanced Filter Drawer */}
-      {showFilters && (
+
+       {showFilters && (
         <div className="w-full max-w-5xl mb-8 grid grid-cols-1 gap-4 rounded-2xl border border-black/10 bg-gray-50 p-6 sm:grid-cols-2 lg:grid-cols-4">
           {allowedFilters.subjectCode && (
             <label className="block">
@@ -176,7 +176,6 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFil
         </div>
       )}
 
-      {/* Results */}
       {loading ? (
         <p className="py-16 text-center text-sm font-mono text-slate-400">Loading resources…</p>
       ) : error ? (

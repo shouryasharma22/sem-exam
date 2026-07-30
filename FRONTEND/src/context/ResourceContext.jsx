@@ -9,7 +9,6 @@ export function ResourceProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 🟩 All filter states now live globally in the context
   const [searchQuery, setSearchQuery] = useState('');
   const [department, setDepartment] = useState('');
   const [subjectCode, setSubjectCode] = useState('');
