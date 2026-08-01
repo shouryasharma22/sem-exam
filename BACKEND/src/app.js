@@ -25,17 +25,13 @@ app.get('/health', (req, res) => {
 
 app.use('/api/v1/resources', resourceRoutes);
 app.use('/api/v1/admin', adminRoutes);
-// Add this line among your other app.use() declarations:
 app.use("/temp", express.static("public/temp"));
 
 app.use((err, req, res, next) => {
-  // Log full error for server-side debugging
   console.error(err && (err.stack || err));
 
-  // Determine status code from known error shapes
   let statusCode = err?.statusCode || err?.http_code || 500;
 
-  // Multer file upload errors should return 400
   if (err && err.name === 'MulterError') statusCode = 400;
 
   const message = err?.message || 'Internal Server Error';
