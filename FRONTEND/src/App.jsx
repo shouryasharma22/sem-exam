@@ -16,13 +16,12 @@ function App() {
     <ResourceProvider>
       <Router>
         <div className="min-h-screen">
-          <Navbar /> {/* completely static, no props needed */}
+          <Navbar /> 
 
           <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <Routes>
               <Route path="/" element={<Dashboard />} />
 
-              {/* 🔒 When someone visits /admin, the Guard wakes up and challenges them */}
               <Route
                 path="/admin"
                 element={
