@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react';
 import { fetchResources, deleteResource } from '../api/resourceApi';
 import ResourceCard from '../components/common/ResourceCard';
-// Import the schema primitives and icons from your shared configuration hubs
-import { examTypes, getRecentYears } from '../constants/academic.js';
+import {departmentsList, examTypes, getRecentYears } from '../constants/academic.js';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 
-const departmentsList = [
-  { id: 'computer science', name: 'Computer Science' },
-  { id: 'electronics', name: 'Electronics' },
-  { id: 'information technology', name: 'Information Technology' },
-  { id: 'mechanical', name: 'Mechanical' },
-];
 
 const years = getRecentYears(12);
 
@@ -20,7 +13,6 @@ function AdminResourcesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // 🟩 FILTERING STATE NODES
   const [searchQuery, setSearchQuery] = useState('');
   const [department, setDepartment] = useState('');
   const [subjectCode, setSubjectCode] = useState('');
@@ -59,7 +51,6 @@ function AdminResourcesPage() {
     setExamType('');
   };
 
-  // 🟩 REAL-TIME FILTRATION CLIENT PIPE
   const filteredResources = resources.filter((resource) => {
     const matchesSearch = !searchQuery || 
       String(resource.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||

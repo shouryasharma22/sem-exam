@@ -8,7 +8,6 @@ const years = getRecentYears(12);
 const resourceTypes = ['Exam Paper', 'Textbook', 'Class Notes'];
 
 export default function Dashboard() {
-  // 🟩 Pull all synchronized state hooks directly from the context
   const {
     filteredResources,
     loading,
@@ -71,7 +70,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Conditional Advanced Filter Drawer */}
         {showFilters && (
           <div className="w-full max-w-5xl mb-8 grid grid-cols-1 gap-4 rounded-2xl border border-black/10 bg-gray-50 p-6 sm:grid-cols-2 lg:grid-cols-5">
             <label className="block">

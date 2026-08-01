@@ -35,7 +35,6 @@ export function ResourceProvider({ children }) {
     loadInitialResources();
   }, []);
 
-  // 🟩 Single, optimized filtration pipeline
   const filteredResources = useMemo(() => {
     return resources.filter((resource) => {
       const matchesSearch = !debouncedSearchQuery.trim() || 

@@ -5,7 +5,7 @@ import { departmentsList, examTypes } from '../constants/academic';
 const initialFormState = {
   title: '',
   subjectCode: '',
-  department: '', // 🟩 Starts completely empty
+  department: '', 
   semester: '',
   resourceType: 'Exam Paper',
   examType: 'End-Sem',
@@ -77,7 +77,6 @@ function AdminPortal() {
           </p>
         </div>
       </header>
-  {/*add id and name to all form fields */}
 
       {status && (
         <div
