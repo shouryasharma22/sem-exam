@@ -1,3 +1,4 @@
+import fs from 'fs';
 import Resource from '../models/resource.model.js';
 import { uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -40,6 +41,7 @@ const uploadResource = asyncHandler(async (req, res) => {
   }
 
   if (errors.length > 0) {
+    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     throw new ApiError(400, `Validation Failed. Missing fields: ${errors.join(', ')}`);
   }
 
@@ -51,6 +53,7 @@ const uploadResource = asyncHandler(async (req, res) => {
   try {
     uploadedFile = await uploadOnCloudinary(req.file.path, publicId);
   } catch (err) {
+    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     console.error('Admin upload cloud storage error:', err);
     const statusCode = err?.http_code || err?.status || 500;
     const errorMessage = err?.message || 'Unknown upstream storage gateway exception';
@@ -58,6 +61,7 @@ const uploadResource = asyncHandler(async (req, res) => {
   }
 
   if (!uploadedFile?.secure_url) {
+    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     throw new ApiError(500, 'Failed to upload file to cloud storage', ['Cloudinary response missing secure_url']);
   }
 
@@ -82,6 +86,10 @@ const uploadResource = asyncHandler(async (req, res) => {
   });
 
   const savedResource = await resource.save();
+
+  if (fs.existsSync(req.file.path)) {
+    fs.unlinkSync(req.file.path);
+  }
 
   res.status(201).json(
     new ApiResponse(201, savedResource, 'Resource uploaded successfully')
