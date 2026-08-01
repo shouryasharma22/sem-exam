@@ -19,12 +19,23 @@ const getResources = asyncHandler(async (req, res) => {
   if (examType) filter.examType = examType;
 
   if (search && search.trim()) {
-    const searchRegex = { $regex: search.trim(), $options: 'i' };
-    filter.$or = [
-      { title: searchRegex },
-      { subjectCode: searchRegex },
-      { tags: searchRegex }
-    ];
+    // Split search input into individual words and escape special regex characters
+    const words = search
+      .trim()
+      .split(/\s+/)
+      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+    // Construct an $and array where EVERY word must match title, subjectCode, or tags
+    filter.$and = words.map((word) => {
+      const wordRegex = { $regex: word, $options: 'i' };
+      return {
+        $or: [
+          { title: wordRegex },
+          { subjectCode: wordRegex },
+          { tags: wordRegex }
+        ]
+      };
+    });
   }
 
   const totalResources = await Resource.countDocuments(filter);
