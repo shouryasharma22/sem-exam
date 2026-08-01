@@ -57,7 +57,6 @@ function AdminPortal() {
     try {
       await uploadResource(formData, formState.adminToken);
       setStatus({ type: 'success', message: 'Resource uploaded successfully.' });
-      setFormState(initialFormState);
     } catch (error) {
       setStatus({ type: 'error', message: error.message || 'Upload failed due to a validation error.' });
     } finally {
