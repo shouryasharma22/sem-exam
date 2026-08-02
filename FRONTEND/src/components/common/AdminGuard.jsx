@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const RESOURCE_URL = `${API_BASE_URL}/resources`;
+const ADMIN_URL = `${API_BASE_URL}/admin`;
+const ADMIN_UPLOAD_URL = `${ADMIN_URL}/upload`;
+const ADMIN_DELETE_URL = `${ADMIN_URL}/resources`;
+
 
 export default function AdminGuard({ children }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -10,14 +16,12 @@ export default function AdminGuard({ children }) {
     const verifyAdminSignature = async () => {
       let currentToken = localStorage.getItem('admin_token');
 
-      // 🌟 If no token exists in storage, challenge the user immediately via URL entry
       if (!currentToken) {
         const tokenInput = prompt("🔒 Access Denied: Enter Administrative Signature to clear security gate:");
         if (tokenInput) {
           localStorage.setItem('admin_token', tokenInput);
           currentToken = tokenInput;
         } else {
-          // If they hit cancel or type nothing, instantly boot them back to the home page
           navigate('/', { replace: true });
           return;
         }
@@ -25,7 +29,7 @@ export default function AdminGuard({ children }) {
 
       try {
         setIsChecking(true);
-        const response = await fetch('http://localhost:8000/api/v1/admin/verify', {
+        const response = await fetch(`${ADMIN_URL}/verify`, {
           method: 'POST',
           headers: { 'x-admin-token': currentToken }
         });
