@@ -28,6 +28,8 @@ export async function fetchResources({
   subjectCode = '',
   year = '',
   examType = '',
+  page = 1,
+  limit = 12,
 } = {}) {
   const params = new URLSearchParams();
   if (search) params.append('search', search);
@@ -37,6 +39,8 @@ export async function fetchResources({
   if (subjectCode) params.append('subjectCode', subjectCode);
   if (year) params.append('year', String(year));
   if (examType) params.append('examType', examType);
+  if (page) params.append('page', String(page));
+  if (limit) params.append('limit', String(limit));
 
   const endpoint = params.toString() ? `${RESOURCE_URL}?${params.toString()}` : RESOURCE_URL;
 
@@ -48,9 +52,16 @@ export async function fetchResources({
 
     const wrapper = await parseResponse(response);
     if (Array.isArray(wrapper)) {
-      return wrapper;
+      return { resources: wrapper, page: 1, limit, total: wrapper.length, hasMore: false };
     }
-    return wrapper.data?.resources ?? [];
+
+    return {
+      resources: wrapper.data?.resources ?? [],
+      page: wrapper.data?.page ?? 1,
+      limit: wrapper.data?.limit ?? limit,
+      total: wrapper.data?.total ?? 0,
+      hasMore: wrapper.data?.hasMore ?? false,
+    };
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Unable to load resources: ${error.message}`);

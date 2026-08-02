@@ -1,35 +1,97 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { useResource } from '../context/ResourceContext';
+import { fetchResources } from '../api/resourceApi';
 import ResourceCard from '../components/common/ResourceCard';
 import { departmentsList, examTypes, getRecentYears } from '../constants/academic.js';
+import useDebounce from '../hooks/useDebounce.js';
 
 const years = getRecentYears(12);
 const resourceTypes = ['Exam Paper', 'Textbook', 'Class Notes'];
+const PAGE_SIZE = 12;
 
 export default function Dashboard() {
-  const {
-    filteredResources,
-    loading,
-    error,
-    searchQuery,
-    setSearchQuery,
-    department,
-    setDepartment,
-    subjectCode,
-    setSubjectCode,
-    year,
-    setYear,
-    examType,
-    setExamType,
-    resourceType,
-    setResourceType,
-    clearFilters
-  } = useResource();
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [department, setDepartment] = useState('');
+  const [subjectCode, setSubjectCode] = useState('');
+  const [year, setYear] = useState('');
+  const [examType, setExamType] = useState('');
+  const [resourceType, setResourceType] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  
+
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageInfo, setPageInfo] = useState({ page: 1, limit: PAGE_SIZE, total: 0, hasMore: false });
+
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  const debouncedSubjectCode = useDebounce(subjectCode, 300);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, department, debouncedSubjectCode, year, examType, resourceType]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const data = await fetchResources({
+          search: debouncedSearch,
+          department,
+          subjectCode: debouncedSubjectCode,
+          year,
+          examType,
+          resourceType,
+          page,
+          limit: PAGE_SIZE,
+        });
+        if (!cancelled) {
+          setResources(data.resources ?? []);
+          setPageInfo({
+            page: data.page ?? 1,
+            limit: data.limit ?? PAGE_SIZE,
+            total: data.total ?? 0,
+            hasMore: data.hasMore ?? false,
+          });
+        }
+      } catch (err) {
+        if (!cancelled) setError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [debouncedSearch, department, debouncedSubjectCode, year, examType, resourceType, page]);
+
   const activeFilterCount = [department, subjectCode, year, examType, resourceType].filter(Boolean).length;
+
+  const clearFilters = () => {
+    setDepartment('');
+    setSubjectCode('');
+    setYear('');
+    setExamType('');
+    setResourceType('');
+    setPage(1);
+  };
+
+  const totalPages = Math.max(Math.ceil(pageInfo.total / pageInfo.limit), 1);
+  const visiblePages = useMemo(() => {
+    const pages = [];
+    const start = Math.max(1, page - 2);
+    const end = Math.min(totalPages, page + 2);
+
+    for (let index = start; index <= end; index += 1) {
+      pages.push(index);
+    }
+
+    return pages;
+  }, [page, totalPages]);
+
+  const startItem = pageInfo.total === 0 ? 0 : (page - 1) * pageInfo.limit + 1;
+  const endItem = Math.min(page * pageInfo.limit, pageInfo.total);
 
   return (
     <div className="w-full min-h-[calc(100vh-84px)] bg-white">
@@ -46,7 +108,10 @@ export default function Dashboard() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
               placeholder="search by name, course, category and everything else"
               className="w-full bg-white border border-black rounded-xl py-4 pl-6 pr-14 text-black focus:outline-none focus:border-[#ff571a] transition-all"
             />
@@ -76,7 +141,10 @@ export default function Dashboard() {
               <span className="text-xs font-semibold uppercase tracking-wider text-black/50 font-mono">Subject Code</span>
               <input
                 value={subjectCode}
-                onChange={(e) => setSubjectCode(e.target.value)}
+                onChange={(e) => {
+                  setSubjectCode(e.target.value);
+                  setPage(1);
+                }}
                 placeholder="e.g. CS201"
                 className="mt-2 w-full rounded-xl border border-black/20 bg-white px-3 py-2.5 text-sm text-black outline-none focus:border-[#ff571a]"
               />
@@ -86,7 +154,10 @@ export default function Dashboard() {
               <span className="text-xs font-semibold uppercase tracking-wider text-black/50 font-mono">Department</span>
               <select
                 value={department}
-                onChange={(e) => setDepartment(e.target.value)}
+                onChange={(e) => {
+                  setDepartment(e.target.value);
+                  setPage(1);
+                }}
                 className="mt-2 w-full rounded-xl border border-black/20 bg-white px-3 py-2.5 text-sm text-black outline-none focus:border-[#ff571a]"
               >
                 <option value="">All departments</option>
@@ -100,7 +171,10 @@ export default function Dashboard() {
               <span className="text-xs font-semibold uppercase tracking-wider text-black/50 font-mono">Year</span>
               <select
                 value={year}
-                onChange={(e) => setYear(e.target.value)}
+                onChange={(e) => {
+                  setYear(e.target.value);
+                  setPage(1);
+                }}
                 className="mt-2 w-full rounded-xl border border-black/20 bg-white px-3 py-2.5 text-sm text-black outline-none focus:border-[#ff571a]"
               >
                 <option value="">All years</option>
@@ -114,7 +188,10 @@ export default function Dashboard() {
               <span className="text-xs font-semibold uppercase tracking-wider text-black/50 font-mono">Resource Type</span>
               <select
                 value={resourceType}
-                onChange={(e) => setResourceType(e.target.value)}
+                onChange={(e) => {
+                  setResourceType(e.target.value);
+                  setPage(1);
+                }}
                 className="mt-2 w-full rounded-xl border border-black/20 bg-white px-3 py-2.5 text-sm text-black outline-none focus:border-[#ff571a]"
               >
                 <option value="">All types</option>
@@ -128,7 +205,10 @@ export default function Dashboard() {
               <span className="text-xs font-semibold uppercase tracking-wider text-black/50 font-mono">Exam Type</span>
               <select
                 value={examType}
-                onChange={(e) => setExamType(e.target.value)}
+                onChange={(e) => {
+                  setExamType(e.target.value);
+                  setPage(1);
+                }}
                 className="mt-2 w-full rounded-xl border border-black/20 bg-white px-3 py-2.5 text-sm text-black outline-none focus:border-[#ff571a]"
               >
                 <option value="">All types</option>
@@ -162,17 +242,54 @@ export default function Dashboard() {
           {error && <p className="text-center font-mono text-xs text-red-600">Error: {error}</p>}
 
           {!loading && !error && (
-            /* 🟩 Directly map filteredResources from the Context! */
-            filteredResources.length === 0 ? (
+            resources.length === 0 ? (
               <div className="text-center py-12 border border-dashed border-black/20 rounded-xl max-w-2xl mx-auto">
                 <p className="text-black text-sm font-medium">Could not find any resources</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {filteredResources.map((resource) => (
-                  <ResourceCard key={resource._id} resource={resource} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {resources.map((resource) => (
+                    <ResourceCard key={resource._id} resource={resource} />
+                  ))}
+                </div>
+
+                <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-black/10 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-black/70">
+                    Showing {startItem}-{endItem} of {pageInfo.total} resources
+                  </p>
+                  {pageInfo.total > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPage((currentPage) => Math.max(currentPage - 1, 1))}
+                        disabled={page === 1}
+                        className="rounded-lg border border-black/10 px-3 py-2 text-sm font-medium text-black transition disabled:cursor-not-allowed disabled:opacity-50 hover:border-[#ff571a] hover:text-[#ff571a]"
+                      >
+                        Previous
+                      </button>
+                      {visiblePages.map((pageNumber) => (
+                        <button
+                          key={pageNumber}
+                          type="button"
+                          onClick={() => setPage(pageNumber)}
+                          className={`rounded-lg px-3 py-2 text-sm font-medium transition ${page === pageNumber ? 'bg-[#ff571a] text-white' : 'border border-black/10 text-black hover:border-[#ff571a] hover:text-[#ff571a]'}`}
+                        >
+                          {pageNumber}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setPage((currentPage) => currentPage + 1)}
+                        disabled={!pageInfo.hasMore && page >= totalPages}
+                        className="rounded-lg border border-black/10 px-3 py-2 text-sm font-medium text-black transition disabled:cursor-not-allowed disabled:opacity-50 hover:border-[#ff571a] hover:text-[#ff571a]"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             )
           )}
         </div>

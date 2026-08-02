@@ -3,6 +3,8 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
+const escapeRegex = (value = '') => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const getResources = asyncHandler(async (req, res) => {
   const { department, semester, resourceType, subjectCode, year, examType, search = '' } = req.query;
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -11,21 +13,32 @@ const getResources = asyncHandler(async (req, res) => {
 
   const filter = { isActive: true };
 
-  if (department) filter.department = department;
+  const normalizedDepartment = department?.toString().trim();
+  if (normalizedDepartment) {
+    filter.department = { $regex: `^${escapeRegex(normalizedDepartment)}$`, $options: 'i' };
+  }
+
   if (semester) filter.semester = Number(semester);
   if (resourceType) filter.resourceType = resourceType;
-  if (subjectCode) filter.subjectCode = { $regex: subjectCode.trim(), $options: 'i' };
+
+  const normalizedSubjectCode = subjectCode?.toString().trim();
+  if (normalizedSubjectCode) {
+    filter.subjectCode = { $regex: `^${escapeRegex(normalizedSubjectCode)}$`, $options: 'i' };
+  }
+
   if (year) filter.year = Number(year);
-  if (examType) filter.examType = examType;
+
+  const normalizedExamType = examType?.toString().trim();
+  if (normalizedExamType) {
+    filter.examType = { $regex: `^${escapeRegex(normalizedExamType)}$`, $options: 'i' };
+  }
 
   if (search && search.trim()) {
-    // Split search input into individual words and escape special regex characters
     const words = search
       .trim()
       .split(/\s+/)
-      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      .map((word) => escapeRegex(word));
 
-    // Construct an $and array where EVERY word must match title, subjectCode, or tags
     filter.$and = words.map((word) => {
       const wordRegex = { $regex: word, $options: 'i' };
       return {

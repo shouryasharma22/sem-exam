@@ -25,7 +25,7 @@ export function ResourceProvider({ children }) {
       setError(null);
       try {
         const data = await fetchResources();
-        setResources(Array.isArray(data) ? data : []);
+        setResources(Array.isArray(data) ? data : data.resources ?? []);
       } catch (fetchError) {
         setError(fetchError.message || 'Unable to load resources');
       } finally {
