@@ -28,7 +28,7 @@ function AdminResourcesPage() {
     (async () => {
       try {
         const data = await fetchResources();
-        if (!cancelled) setResources(data);
+        if (!cancelled) setResources(data.resources ?? []);
       } catch (err) {
         if (!cancelled) setError(err.message);
       } finally {
