@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "import:drive": "node scripts/importDrive.js"
   },
   "dependencies": {
     "cloudinary": "^2.10.0",
@@ -14,6 +15,7 @@
     "dotenv": "^16.4.1",
     "express": "^4.21.1",
     "express-rate-limit": "^8.5.2",
+    "googleapis": "^174.0.1",
     "mongodb": "^7.4.0",
     "mongoose": "^8.7.0",
     "multer": "^2.2.0",
