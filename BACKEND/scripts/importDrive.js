@@ -55,16 +55,6 @@ const parseMetadata = (fileName, folderPath = '') => {
   else if (/^MT/i.test(subjectCode)) department = 'materials science';
   else if (/^SM/i.test(subjectCode)) department = 'humanities';
 
-  let semester = 1;
-  const semMatch = fullContext.match(/semester\s*(\d)|sem\s*(\d)/i);
-  const yearMatchContext = fullContext.match(/(\d)(?:st|nd|rd|th)?\s*year/i);
-  if (semMatch) {
-    semester = parseInt(semMatch[1] || semMatch[2], 10);
-  } else if (yearMatchContext) {
-    const yr = parseInt(yearMatchContext[1], 10);
-    semester = Math.min(Math.max(yr * 2 - 1, 1), 8);
-  }
-
   const yearMatch = fullContext.match(/\b(20\d{2})\b/);
   const year = yearMatch ? parseInt(yearMatch[1], 10) : new Date().getFullYear();
 
@@ -95,11 +85,9 @@ const parseMetadata = (fileName, folderPath = '') => {
   };
 
   if (resourceType === 'Exam Paper') {
-    doc.semester = semester;
     doc.year = year;
     doc.examType = examType;
   } else {
-    doc.semester = semester;
     doc.year = year;
     doc.examType = 'Other';
   }

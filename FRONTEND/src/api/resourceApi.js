@@ -23,7 +23,6 @@ async function parseResponse(response) {
 export async function fetchResources({
   search = '',
   department = '',
-  semester = '',
   resourceType = '',
   subjectCode = '',
   year = '',
@@ -34,7 +33,6 @@ export async function fetchResources({
   const params = new URLSearchParams();
   if (search) params.append('search', search);
   if (department) params.append('department', department);
-  if (semester !== '' && semester !== null) params.append('semester', String(semester));
   if (resourceType) params.append('resourceType', resourceType);
   if (subjectCode) params.append('subjectCode', subjectCode);
   if (year) params.append('year', String(year));

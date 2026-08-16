@@ -12,14 +12,6 @@ const resourceSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-    semester: {
-      type: Number,
-      min: 1,
-      max: 8,
-      required: function () {
-      return this.resourceType !== 'Textbook'&&this.resourceType !== 'Class Notes';
-    }
-    },
     resourceType: {
       type: String,
       enum: ['Exam Paper', 'Textbook', 'Class Notes'],

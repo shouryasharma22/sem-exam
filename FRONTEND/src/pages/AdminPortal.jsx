@@ -5,8 +5,7 @@ import { departmentsList, examTypes } from '../constants/academic';
 const initialFormState = {
   title: '',
   subjectCode: '',
-  department: '', 
-  semester: '',
+  department: '',
   resourceType: '',
   examType: '',
   year: '',
@@ -16,7 +15,6 @@ const initialFormState = {
 };
 
 const resourceTypes = ['Exam Paper', 'Textbook', 'Class Notes'];
-const semesters = Array.from({ length: 8 }, (_, index) => index + 1);
 
 function AdminPortal() {
   const [formState, setFormState] = useState(initialFormState);
@@ -45,7 +43,6 @@ function AdminPortal() {
     formData.append('title', formState.title);
     formData.append('subjectCode', formState.subjectCode);
     formData.append('department', formState.department);
-    formData.append('semester', formState.semester);
     formData.append('resourceType', formState.resourceType);
     formData.append('examType', formState.examType);
     formData.append('year', formState.year);
@@ -130,25 +127,6 @@ function AdminPortal() {
               {departmentsList.map((dept) => (
                 <option key={dept.id} value={dept.id}>
                   {dept.name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-600">Semester</span>
-            <select
-              id="semester"
-              name="semester"
-              value={formState.semester}
-              onChange={(event) => updateField('semester', event.target.value)}
-              required={formState.resourceType !== 'Textbook'&&formState.resourceType !== 'Class Notes'}
-              className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-            >
-              <option value="">Select semester</option>
-              {semesters.map((semester) => (
-                <option key={semester} value={semester}>
-                  Semester {semester}
                 </option>
               ))}
             </select>

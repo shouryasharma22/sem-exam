@@ -24,11 +24,6 @@ body:
       description: ""
       disabled: false
     - type: text
-      key: semester
-      value: "3"
-      description: ""
-      disabled: false
-    - type: text
       key: resourceType
       value: Exam Paper
       description: ""

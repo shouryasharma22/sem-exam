@@ -6,7 +6,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 const escapeRegex = (value = '') => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const getResources = asyncHandler(async (req, res) => {
-  const { department, semester, resourceType, subjectCode, year, examType, search = '' } = req.query;
+  const { department, resourceType, subjectCode, year, examType, search = '' } = req.query;
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
   const limit = Math.max(parseInt(req.query.limit, 10) || 12, 1);
   const skip = (page - 1) * limit;
@@ -18,7 +18,6 @@ const getResources = asyncHandler(async (req, res) => {
     filter.department = { $regex: `^${escapeRegex(normalizedDepartment)}$`, $options: 'i' };
   }
 
-  if (semester) filter.semester = Number(semester);
   if (resourceType) filter.resourceType = resourceType;
 
   const normalizedSubjectCode = subjectCode?.toString().trim();

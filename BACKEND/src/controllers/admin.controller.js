@@ -19,7 +19,6 @@ const uploadResource = asyncHandler(async (req, res) => {
   const {
     title,
     department,
-    semester,
     resourceType,
     subjectCode,
     year,
@@ -36,7 +35,6 @@ const uploadResource = asyncHandler(async (req, res) => {
   if (!subjectCode?.trim()) errors.push('subjectCode');
 
   if (!isTextbookOrNotes) {
-    if (!semester || String(semester).trim() === '') errors.push('semester');
     if (!year || String(year).trim() === '') errors.push('year');
   }
 
@@ -74,7 +72,6 @@ const uploadResource = asyncHandler(async (req, res) => {
   const resource = new Resource({
     title: title.trim(),
     department: department.trim(),
-    semester: semester !== undefined && semester !== null && String(semester).trim() !== '' ? Number(semester) : undefined,
     resourceType: resourceType.trim(),
     subjectCode: subjectCode.toString().trim().toUpperCase(),
     year: year !== undefined && year !== null && String(year).trim() !== '' ? Number(year) : undefined,

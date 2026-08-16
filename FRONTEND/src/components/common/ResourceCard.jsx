@@ -9,7 +9,6 @@ function ResourceCard({ resource, isAdmin = false, onDelete }) {
     resourceType = 'Resource',
     examType = '',
     year = '',
-    semester = '',
     fileUrl = '#',
     tags = [],
   } = resource || {};
@@ -69,11 +68,6 @@ function ResourceCard({ resource, isAdmin = false, onDelete }) {
           <span className={`rounded px-2.5 py-0.5 text-xs font-mono uppercase tracking-wider ${typeBadgeClass}`}>
             {typeLabel}
           </span>
-          {semester && (
-            <span className="rounded bg-[#151b2d] border border-[#434655]/60 px-2.5 py-0.5 text-xs font-mono text-[#c3c6d7]">
-              SEM {semester}
-            </span>
-          )}
           {year && (
             <span className="rounded bg-[#151b2d] border border-[#434655]/60 px-2.5 py-0.5 text-xs font-mono text-[#c3c6d7]">
               {year}
