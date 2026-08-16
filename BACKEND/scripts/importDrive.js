@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { google } from 'googleapis';
 import Resource from '../src/models/resource.model.js';
 
-const ROOT_FOLDER_ID = '19JDVhwwuAK6DEQX3A7f3eJxZHFy6zD-R';
+const ROOT_FOLDER_ID = '19FX6thtZaQw3B8q3HauWlw_aNScQyAvJ';
 
 let uri = process.env.MONGODB_URI || '';
 if (!uri.includes('college-resource-hub')) {
