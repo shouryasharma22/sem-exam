@@ -112,7 +112,7 @@ export default function Dashboard() {
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              placeholder="Search by subject code, subject name, or use the filters"
+              placeholder="Search by subject code..."
               className="w-full bg-white border border-black rounded-xl py-4 pl-6 pr-14 text-black focus:outline-none focus:border-[#ff571a] transition-all"
             />
             <Search
