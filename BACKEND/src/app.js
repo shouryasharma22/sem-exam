@@ -52,5 +52,9 @@ app.use((err, req, res, next) => {
     errors: err?.errors || []
   });
 });
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'UP', timestamp: new Date() });
+});
+
 
 export default app;
