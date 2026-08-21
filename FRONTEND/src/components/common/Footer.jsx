@@ -76,7 +76,7 @@ export default function Footer() {
           </div>
 
           {/* Essential Contact & Links (4 cols) */}
-          <div className="md:col-span-4 space-y-3">
+          {/*<div className="md:col-span-4 space-y-3">
             <h3 className="text-xs font-semibold uppercase tracking-wider font-mono text-neutral-400">
               Contact & Support
             </h3>
@@ -96,14 +96,14 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-neutral-300 hover:text-white transition-colors font-mono"
                 >
-                  {/* 🟩 FIXED: Changed <Github /> to <GithubIcon /> */}
+                   🟩 FIXED: Changed <Github /> to <GithubIcon /> 
                   <GithubIcon size={14} />
                   <span>GitHub Repository</span>
                   <ArrowUpRight size={12} className="text-neutral-500" />
                 </a>
               </div>
             </div>
-          </div>
+          </div> */}
 
         </div>
 
