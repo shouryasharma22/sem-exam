@@ -235,7 +235,7 @@ export default function Dashboard() {
         <div className="w-full mb-24">
           {loading && (
             <p className="text-center font-mono text-xs text-black/60 animate-pulse">
-              Syncing with resource database…
+              Fetching resources.....
             </p>
           )}
 
