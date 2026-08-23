@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "import:drive": "node scripts/importDrive.js"
+    "drive": "node scripts/importDrive.js"
   },
   "dependencies": {
     "cloudinary": "^2.10.0",
