@@ -1,15 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ResourceProvider } from './context/ResourceContext';
-import Navbar from './components/layout/Navbar';
+import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import AdminPortal from './pages/AdminPortal';
-import AdminGuard from './components/common/AdminGuard';
+import AdminGuard from './components/AdminGuard';
 import AdminResourcesPage from './pages/AdminResourcePage';
 import PyqsPage from './pages/PyqsPage';
 import NotesPage from './pages/NotesPage';
 import './App.css';
 import BooksPage from './pages/BooksPage';
-import Footer from './components/common/Footer';
+import Footer from './components/Footer';
 
 function App() {
   return (
