@@ -39,6 +39,7 @@ const uploadResource = asyncHandler(async (req, res) => {
   }
 
   if (errors.length > 0) {
+    //check if multer created a file at the path and delete it if errors
     if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     throw new ApiError(400, `Validation Failed. Missing fields: ${errors.join(', ')}`);
   }

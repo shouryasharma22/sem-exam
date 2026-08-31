@@ -10,7 +10,6 @@ if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
   );
 }
 
-// 🟩 FIXED: We stripped out cloudinary_url completely to avoid key overriding!
 cloudinary.config({
   cloud_name: CLOUDINARY_CLOUD_NAME,
   api_key: CLOUDINARY_API_KEY,

@@ -3,6 +3,8 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
+//using escaperegex to prevent any errors due to special characters in the query value.
+//it helps by adding '\' before every special character and it gets treated as normal character
 const escapeRegex = (value = '') => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const getResources = asyncHandler(async (req, res) => {
@@ -31,13 +33,14 @@ const getResources = asyncHandler(async (req, res) => {
   if (normalizedExamType) {
     filter.examType = { $regex: `^${escapeRegex(normalizedExamType)}$`, $options: 'i' };
   }
-
+//get search from the query and split iit into words array and give the escape regex version to words
   if (search && search.trim()) {
     const words = search
       .trim()
       .split(/\s+/)
       .map((word) => escapeRegex(word));
 
+    //add a new key to filter called $and, if it evaluates to true, then doc is kept otherwise discarded
     filter.$and = words.map((word) => {
       const wordRegex = { $regex: word, $options: 'i' };
       return {
@@ -49,9 +52,9 @@ const getResources = asyncHandler(async (req, res) => {
       };
     });
   }
-
+  //count documents that match the filtered criteria
   const totalResources = await Resource.countDocuments(filter);
-
+  //get the resources that match the filtered criteria
   const resources = await Resource.find(filter)
     .sort({ createdAt: -1 })
     .skip(skip)

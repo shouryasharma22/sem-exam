@@ -1,5 +1,5 @@
 import { Mail, ArrowUpRight } from 'lucide-react';
-import { useResource } from '../../context/ResourceContext.jsx';
+import { useResource } from '../context/ResourceContext.jsx';
 
 const GithubIcon = ({ size = 14, className = "" }) => (
   <svg 

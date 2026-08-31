@@ -1,4 +1,4 @@
-import ResourceExplorer from '../components/common/ResourcesExplorer';
+import ResourceExplorer from '../components/ResourcesExplorer';
 
 function BooksPage() {
   return (

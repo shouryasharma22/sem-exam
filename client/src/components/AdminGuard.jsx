@@ -55,11 +55,12 @@ export default function AdminGuard({ children }) {
     };
 
     verifyAdminSignature();
+    //if navigation function ever changes, re-run the process to make sure we have the latest navigation function (very rare case)
   }, [navigate]);
 
   if (isChecking) {
     return (
-      <div className="flex justify-center items-center py-24 bg-[#0B0F19] min-h-screen">
+      <div className="flex justify-center items-center py-24 bg-[#FFFFFF] min-h-screen">
         <p className="text-blue-500 font-mono text-sm animate-pulse">Verifying admin token....</p>
       </div>
     );

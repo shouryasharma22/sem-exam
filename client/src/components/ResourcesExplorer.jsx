@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { fetchResources } from '../../api/resourceApi.js';
+import { fetchResources } from '../api/resourceApi.js';
 import ResourceCard from './ResourceCard.jsx';
-import useDebounce from '../../hooks/useDebounce.js';
-import { departmentsList, examTypes, getRecentYears } from '../../constants/academic.js';
+import useDebounce from '../hooks/useDebounce.js';
+import { departmentsList, examTypes, getRecentYears } from '../constants/academic.js';
 
 const years = getRecentYears(12);
 const PAGE_SIZE = 12;

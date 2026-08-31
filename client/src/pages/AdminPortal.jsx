@@ -20,7 +20,7 @@ function AdminPortal() {
   const [formState, setFormState] = useState(initialFormState);
   const [status, setStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  //function to update the formstate value when input changes
   const updateField = (field, value) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
   };

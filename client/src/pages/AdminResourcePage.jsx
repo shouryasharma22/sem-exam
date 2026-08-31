@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchResources, deleteResource } from '../api/resourceApi.js';
-import ResourceCard from '../components/common/ResourceCard.jsx';
+import ResourceCard from '../components/ResourceCard.jsx';
 import {departmentsList, examTypes, getRecentYears } from '../constants/academic.js';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import useDebounce from '../hooks/useDebounce.js';
