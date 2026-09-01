@@ -72,7 +72,6 @@ const parseMetadata = (fileName, folderPath = '') => {
     department,
     resourceType,
     subjectCode,
-    isActive: true,
   };
 
   if (resourceType === 'Exam Paper') {

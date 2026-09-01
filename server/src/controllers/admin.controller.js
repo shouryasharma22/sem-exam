@@ -71,8 +71,7 @@ const uploadResource = asyncHandler(async (req, res) => {
     year: year !== undefined && year !== null && String(year).trim() !== '' ? Number(year) : undefined,
     examType: examType || 'Other',
     publicId: uploadedFile.public_id,
-    fileUrl: uploadedFile.secure_url,
-    isActive: true
+    fileUrl: uploadedFile.secure_url
   });
 
   const savedResource = await resource.save();

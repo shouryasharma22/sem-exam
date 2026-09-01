@@ -13,7 +13,7 @@ const getResources = asyncHandler(async (req, res) => {
   const limit = Math.max(parseInt(req.query.limit, 10) || 12, 1);
   const skip = (page - 1) * limit;
 
-  const filter = { isActive: true };
+  const filter = {};
 
   const normalizedDepartment = department?.toString().trim();
   if (normalizedDepartment) {
