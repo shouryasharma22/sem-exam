@@ -22,8 +22,7 @@ const uploadResource = asyncHandler(async (req, res) => {
     resourceType,
     subjectCode,
     year,
-    examType,
-    tags
+    examType
   } = req.body;
 
   const isTextbookOrNotes = String(resourceType).trim().toLowerCase() === 'textbook' || String(resourceType).trim().toLowerCase() === 'class notes';
@@ -64,12 +63,6 @@ const uploadResource = asyncHandler(async (req, res) => {
     throw new ApiError(500, 'Failed to upload file to cloud storage', ['Cloudinary response missing secure_url']);
   }
 
-  const normalizedTags = Array.isArray(tags)
-    ? tags.map((tag) => tag.trim()).filter(Boolean)
-    : typeof tags === 'string'
-      ? tags.split(',').map((tag) => tag.trim()).filter(Boolean)
-      : [];
-
   const resource = new Resource({
     title: title.trim(),
     department: department.trim(),
@@ -79,7 +72,6 @@ const uploadResource = asyncHandler(async (req, res) => {
     examType: examType || 'Other',
     publicId: uploadedFile.public_id,
     fileUrl: uploadedFile.secure_url,
-    tags: normalizedTags,
     isActive: true
   });
 

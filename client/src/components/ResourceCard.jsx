@@ -10,7 +10,6 @@ function ResourceCard({ resource, isAdmin = false, onDelete }) {
     examType = '',
     year = '',
     fileUrl = '#',
-    tags = [],
   } = resource || {};
 
   const [confirming, setConfirming] = useState(false);

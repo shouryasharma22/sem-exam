@@ -67,20 +67,11 @@ const parseMetadata = (fileName, folderPath = '') => {
     examType = 'Quiz';
   }
 
-  const tags = [
-    subjectCode,
-    department,
-    resourceType,
-    ...(yearMatch ? [year.toString()] : []),
-    ...(examType !== 'Other' ? [examType] : []),
-  ].filter(Boolean);
-
   const doc = {
     title: cleanName,
     department,
     resourceType,
     subjectCode,
-    tags,
     isActive: true,
   };
 

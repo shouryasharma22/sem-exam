@@ -9,7 +9,6 @@ const initialFormState = {
   resourceType: '',
   examType: '',
   year: '',
-  tags: '',
   resourceFile: null,
   adminToken: '',
 };
@@ -46,7 +45,6 @@ function AdminPortal() {
     formData.append('resourceType', formState.resourceType);
     formData.append('examType', formState.examType);
     formData.append('year', formState.year);
-    formData.append('tags', formState.tags);
     formData.append('resourceFile', formState.resourceFile);
 
     setIsSubmitting(true);
@@ -211,19 +209,6 @@ function AdminPortal() {
             onChange={(event) => updateField('resourceFile', event.target.files?.[0] || null)}
             required
             className="mt-2 w-full text-sm text-slate-600"
-          />
-        </label>
-
-        <label className="block">
-          <span className="text-sm font-semibold text-slate-600">Tags</span>
-          <input
-            id="tags"
-            name="tags"
-            
-            value={formState.tags}
-            onChange={(event) => updateField('tags', event.target.value)}
-            className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-            placeholder="exam, notes, pdf"
           />
         </label>
 

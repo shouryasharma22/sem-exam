@@ -46,8 +46,7 @@ const getResources = asyncHandler(async (req, res) => {
       return {
         $or: [
           { title: wordRegex },
-          { subjectCode: wordRegex },
-          { tags: wordRegex }
+          { subjectCode: wordRegex }
         ]
       };
     });

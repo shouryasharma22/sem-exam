@@ -43,10 +43,6 @@ const resourceSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    tags: {
-      type: [String],
-      default: []
-    },
     isActive: {
       type: Boolean,
       default: true
@@ -57,8 +53,8 @@ const resourceSchema = new mongoose.Schema(
 );
 
 resourceSchema.index(
-  { subjectCode: 'text', title: 'text', tags: 'text' },
-  { weights: { subjectCode: 10, title: 5, tags: 1 } }
+  { subjectCode: 'text', title: 'text' },
+  { weights: { subjectCode: 10, title: 5 } }
 );
 
 export default mongoose.model('Resource', resourceSchema);
