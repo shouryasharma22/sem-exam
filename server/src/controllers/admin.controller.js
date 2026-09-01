@@ -30,12 +30,12 @@ const uploadResource = asyncHandler(async (req, res) => {
 
   const errors = [];
   if (!title?.trim()) errors.push('title');
-  if (!department?.trim()) errors.push('department');
   if (!resourceType?.trim()) errors.push('resourceType');
   if (!subjectCode?.trim()) errors.push('subjectCode');
 
   if (!isTextbookOrNotes) {
     if (!year || String(year).trim() === '') errors.push('year');
+    if (!department?.trim()) errors.push('department');
   }
 
   if (errors.length > 0) {
