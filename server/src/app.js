@@ -10,6 +10,7 @@ const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim().replace(/^\[|\]\(.*\)$/g, '').replace(/\/$/, ''))
   : ['https://semexam.vercel.app', 'http://localhost:5173', 'http://localhost:3000'];
 
+//make a cors function to check if there is no origin or it is in the allowedorigins, if not then return error. give them authority to access credentials like secret passwords, tokens etc.
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -23,6 +24,8 @@ app.use(
   })
 );
 
+
+//middleware to put the incoming data into json format and prevent large and heavy unnecessary uploads by putitng 16kb limit
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 
@@ -51,9 +54,6 @@ app.use((err, req, res, next) => {
     message,
     errors: err?.errors || []
   });
-});
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'UP', timestamp: new Date() });
 });
 
 
