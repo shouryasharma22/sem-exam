@@ -1,5 +1,4 @@
 import { Mail, ArrowUpRight } from 'lucide-react';
-import { useResource } from '../context/ResourceContext.jsx';
 
 const GithubIcon = ({ size = 14, className = "" }) => (
   <svg 
@@ -18,14 +17,6 @@ const GithubIcon = ({ size = 14, className = "" }) => (
   </svg>
 );
 
-export default function Footer() {
-  const { setResourceType, clearFilters } = useResource();
-
-  const handleResourceClick = (type) => {
-    clearFilters();
-    setResourceType(type);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   return (
     <footer className="w-full bg-black text-white border-t border-neutral-800 font-sans">
