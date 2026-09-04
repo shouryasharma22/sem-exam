@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ResourceProvider } from './context/ResourceContext';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import AdminPortal from './pages/AdminPortal';
@@ -13,7 +12,6 @@ import Footer from './components/Footer';
 
 function App() {
   return (
-    <ResourceProvider>
       <Router>
         <div className="min-h-screen">
           <Navbar /> 
@@ -48,7 +46,6 @@ function App() {
         </div>
      <Footer />
       </Router>
-    </ResourceProvider>
   );
 }
 
