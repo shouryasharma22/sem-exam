@@ -7,7 +7,7 @@ import useDebounce from '../hooks/useDebounce.js';
 
 const years = getRecentYears(12);
 const resourceTypes = ['Exam Paper', 'Textbook', 'Class Notes'];
-const PAGE_SIZE = 12;
+const pageSize = 12;
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,7 +22,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
-  const [pageInfo, setPageInfo] = useState({ page: 1, limit: PAGE_SIZE, total: 0, hasMore: false });
+  const [pageInfo, setPageInfo] = useState({ page: 1, limit: pageSize, total: 0, hasMore: false });
 
   const debouncedSearch = useDebounce(searchQuery, 300);
   const debouncedSubjectCode = useDebounce(subjectCode, 300);
@@ -46,25 +46,27 @@ export default function Dashboard() {
           examType,
           resourceType,
           page,
-          limit: PAGE_SIZE,
+          limit: pageSize,
         });
         if (!cancelled) {
           setResources(data.resources ?? []);
           setPageInfo({
             page: data.page ?? 1,
-            limit: data.limit ?? PAGE_SIZE,
+            limit: data.limit ?? pageSize,
             total: data.total ?? 0,
             hasMore: data.hasMore ?? false,
           });
         }
       } catch (err) {
         if (!cancelled) setError(err.message);
-      } finally {
+      } finally
+       {
         if (!cancelled) setLoading(false);
       }
     })();
     return () => { cancelled = true; };
   }, [debouncedSearch, department, debouncedSubjectCode, year, examType, resourceType, page]);
+  //using cancelled to prevent old state updates by adding a cleanup function to useeffect which runs after every dependency change.
 
   const activeFilterCount = [department, subjectCode, year, examType, resourceType].filter(Boolean).length;
 

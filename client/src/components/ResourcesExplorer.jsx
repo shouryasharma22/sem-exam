@@ -6,7 +6,7 @@ import useDebounce from '../hooks/useDebounce.js';
 import { departmentsList, examTypes, getRecentYears } from '../constants/academic.js';
 
 const years = getRecentYears(12);
-const PAGE_SIZE = 12;
+const pageSize = 12;
 
 function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFilters = { department: true, subjectCode: true, year: true, examType: true } }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,7 +20,7 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFil
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
-  const [pageInfo, setPageInfo] = useState({ page: 1, limit: PAGE_SIZE, total: 0, hasMore: false });
+  const [pageInfo, setPageInfo] = useState({ page: 1, limit: pageSize, total: 0, hasMore: false });
 
   const debouncedSearch = useDebounce(searchQuery, 300);
   const debouncedSubjectCode = useDebounce(subjectCode, 300);
@@ -44,13 +44,13 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFil
           year,
           examType,
           page,
-          limit: PAGE_SIZE,
+          limit: pageSize,
         });
         if (!cancelled) {
           setResources(data.resources ?? []);
           setPageInfo({
             page: data.page ?? 1,
-            limit: data.limit ?? PAGE_SIZE,
+            limit: data.limit ?? pageSize,
             total: data.total ?? 0,
             hasMore: data.hasMore ?? false,
           });

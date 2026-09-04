@@ -110,4 +110,3 @@ const GithubIcon = ({ size = 14, className = "" }) => (
       </div>
     </footer>
   );
-}

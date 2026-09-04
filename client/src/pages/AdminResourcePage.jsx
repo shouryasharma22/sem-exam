@@ -7,7 +7,7 @@ import useDebounce from '../hooks/useDebounce.js';
 
 
 const years = getRecentYears(12);
-const PAGE_SIZE = 12;
+const pageSize = 12;
 
 function AdminResourcesPage() {
   const adminToken = localStorage.getItem('admin_token');
@@ -23,7 +23,7 @@ function AdminResourcesPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   const [page, setPage] = useState(1);
-  const [pageInfo, setPageInfo] = useState({ page: 1, limit: PAGE_SIZE, total: 0, hasMore: false });
+  const [pageInfo, setPageInfo] = useState({ page: 1, limit: pageSize, total: 0, hasMore: false });
 
   const debouncedSearch = useDebounce(searchQuery, 300);
   const debouncedSubjectCode = useDebounce(subjectCode, 300);
@@ -48,13 +48,13 @@ function AdminResourcesPage() {
           year,
           examType,
           page,
-          limit: PAGE_SIZE,
+          limit: pageSize,
         });
         if (!cancelled) {
           setResources(data.resources ?? []);
           setPageInfo({
             page: data.page ?? 1,
-            limit: data.limit ?? PAGE_SIZE,
+            limit: data.limit ?? pageSize,
             total: data.total ?? 0,
             hasMore: data.hasMore ?? false,
           });
