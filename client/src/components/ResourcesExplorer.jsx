@@ -63,7 +63,7 @@ function ResourceExplorer({ resourceType, pageTitle, pageDescription, allowedFil
     })();
     return () => { cancelled = true; };
   }, [resourceType, debouncedSearch, department, debouncedSubjectCode, year, examType, page]);
-
+  //check if department filter is allowed and if it is selected.
   const activeFilterCount = (
     (allowedFilters.department && department ? 1 : 0) +
     (allowedFilters.subjectCode && subjectCode ? 1 : 0) +

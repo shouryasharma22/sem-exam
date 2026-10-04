@@ -9,6 +9,7 @@ import NotesPage from './pages/NotesPage';
 import './App.css';
 import BooksPage from './pages/BooksPage';
 import Footer from './components/Footer';
+import { Analytics } from "@vercel/analytics/next"
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           </main>
         </div>
      <Footer />
+        <Analytics />
       </Router>
   );
 }
