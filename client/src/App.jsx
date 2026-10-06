@@ -9,7 +9,7 @@ import NotesPage from './pages/NotesPage';
 import './App.css';
 import BooksPage from './pages/BooksPage';
 import Footer from './components/Footer';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   return (
